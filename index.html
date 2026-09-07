@@ -375,8 +375,8 @@ const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch
 const slugFromUrl=u=>{ const m=(u||'').match(/\/(?:drugs|otc)\/([^/?#]+)/); return m?m[1]:null; };
 const titleCase=s=>s?s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()):s;
 const shardKey=t=>{ let k=(t||'').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,2); while(k.length<2)k+='_'; return k; };
-// data/ is bucketed into 256 dirs (HF caps a directory at 10k files). Mirrors data_shard() in server.py / onemg_scraper.py
-const dataShard=slug=>{ let h=0x811c9dc5>>>0; for(let i=0;i<slug.length;i++) h=Math.imul(h^slug.charCodeAt(i),0x01000193)>>>0; return (h&0xff).toString(16).padStart(2,'0'); };
+// records are packed into 4096 bundle files (data/<abc>.json = {slug:record}). HF caps files/dir + commits/hour, so one file per medicine is impossible.
+const bundleKey=slug=>{ let h=0x811c9dc5>>>0; for(let i=0;i<slug.length;i++) h=Math.imul(h^slug.charCodeAt(i),0x01000193)>>>0; return (h&0x3fff).toString(16).padStart(4,'0'); };
 const saltParts=comp=>{
   if(!comp) return [];
   return comp.replace(/\([^)]*\)/g,'').split(/[+,]/).map(x=>x.replace(/\s+/g,' ').trim().replace(/^\.+|\.+$/g,'').toLowerCase()).filter(x=>x.length>=3);
@@ -398,7 +398,7 @@ async function shardExists(name){
 const API={
   async stats(){ return (await getJSON('stats.json'))||{count:0,drugs:0,otc:0,prescription:0}; },
   async facets(){ return (await getJSON('facets.json'))||{classes:[],forms:[],rx:[]}; },
-  async record(slug){ return await getJSON('data/'+dataShard(slug)+'/'+slug+'.json'); },
+  async record(slug){ const k=bundleKey(slug); const b=await getJSON('data/'+k.slice(0,2)+'/'+k+'.json'); return (b && b[slug]) || null; },
 
   async _base({q,cls,form}){
     // returns the unfiltered candidate list for the query
