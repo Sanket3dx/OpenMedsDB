@@ -4,10 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="Sanket Patil">
-<meta name="description" content="OpenMedsDB - an open, searchable reference database of medicines: composition, uses, side effects, dosage, interactions and safety advice. Compiled by Sanket Patil.">
+<meta name="description" id="m-desc" content="OpenMedsDB — a free, searchable reference for medicines in India: composition, uses, side effects, dosage, drug interactions, substitutes and safety advice.">
 <meta name="color-scheme" content="light">
+<link rel="canonical" id="m-canon" href="https://openmedsdb.in/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="OpenMedsDB">
+<meta property="og:title" id="m-ogtitle" content="OpenMedsDB — medicine reference">
+<meta property="og:description" id="m-ogdesc" content="A free, searchable reference for medicines in India — composition, uses, side effects, dosage, drug interactions and substitutes.">
+<meta property="og:url" id="m-ogurl" content="https://openmedsdb.in/">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231667c8'/%3E%3Ctext x='16' y='23' font-size='20' font-family='Georgia,serif' fill='white' text-anchor='middle'%3E%E2%84%9E%3C/text%3E%3C/svg%3E">
-<title>OpenMedsDB</title>
+<title>OpenMedsDB — medicine composition, uses, side effects &amp; interactions</title>
 <style>
   :root{
     color-scheme:light;
@@ -315,7 +322,7 @@
 <body>
 <header>
   <div class="bar">
-    <a class="logo" href="#/"><span class="mark">℞</span>OpenMedsDB</a>
+    <a class="logo" href="/"><span class="mark">℞</span>OpenMedsDB</a>
     <div class="hsearch" id="hsearch">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="q" type="search" placeholder="Search by name, salt, manufacturer or class…" spellcheck="false" autocomplete="off" aria-label="Search medicines">
@@ -323,9 +330,9 @@
       <div class="sugg" id="sugg" hidden></div>
     </div>
     <nav class="tabs">
-      <a href="#/" data-nav="browse">Browse</a>
-      <a href="#/rx" data-nav="inx">Interactions</a>
-      <a href="#/about" data-nav="about">About</a>
+      <a href="/" data-nav="browse">Browse</a>
+      <a href="/interactions" data-nav="inx">Interactions</a>
+      <a href="/about" data-nav="about">About</a>
     </nav>
     <div class="stat" id="stat"></div>
   </div>
@@ -363,7 +370,7 @@
 <article id="page" hidden>
   <div class="pwrap">
     <div class="topline">
-      <a class="back" href="#/">← All medicines</a>
+      <a class="back" href="/">← All medicines</a>
       <span class="spacer"></span>
       <button class="ghostbtn" id="sharebtn">Copy link</button>
       <button class="ghostbtn" onclick="window.print()">Print</button>
@@ -447,7 +454,7 @@
 <footer class="sitefoot">
   <div class="in">
     <span>Compiled &amp; maintained by <b>Sanket Patil</b></span>
-    <span><a href="#/about">About</a></span>
+    <span><a href="/about">About</a></span>
     <span><a href="https://github.com/Sanket3dx/" target="_blank" rel="noopener">GitHub</a></span>
     <span class="disc">Informational reference only — not medical advice. Always consult a doctor or pharmacist.</span>
   </div>
@@ -464,6 +471,10 @@
 </aside>
 
 <script>
+/* restore a deep-link path stashed by 404.html on static hosts without a
+   200 SPA fallback (GitHub Pages). No-op on Cloudflare Pages. */
+try{ var _sp=sessionStorage.getItem('spa_path'); if(_sp){ sessionStorage.removeItem('spa_path'); history.replaceState(null,'',_sp); } }catch(e){}
+
 /* ============================================================
    Static build — reads the database straight from Hugging Face.
    To point at a different mirror, change DATA_BASE below.
@@ -675,8 +686,8 @@ function syncUrl(){
   if(state.all) p.set('all','1');
   if(state.page>1) p.set('page',state.page);
   const qs=p.toString();
-  const target='#/'+(qs?'?'+qs:'');
-  if(location.hash!==target){ _suppressHash=true; location.hash=target; }
+  const target='/'+(qs?'?'+qs:'');
+  if(location.pathname+location.search!==target) history.replaceState(null,'',target);
 }
 let lastFacets=null;
 const runNow=async()=>{
@@ -691,7 +702,7 @@ const runNow=async()=>{
     $$('#results [data-cls]').forEach(el=>el.onclick=()=>{ state.cls=el.dataset.cls; state.page=1; run(); });
     $$('#results [data-form]').forEach(el=>el.onclick=()=>{ state.form=el.dataset.form; state.page=1; run(); });
     $$('#results [data-q]').forEach(el=>el.onclick=()=>{ const q=el.dataset.q; $('#q').value=q; state.q=q; state.page=1; run(); });
-    $$('#results [data-go]').forEach(el=>el.onclick=()=>{ location.hash='#/'+el.dataset.go; });
+    $$('#results [data-go]').forEach(el=>el.onclick=()=>{ nav('/interactions'); });
     $$('#results [data-all]').forEach(el=>el.onclick=()=>{ state.all=1; state.page=1; run(); window.scrollTo({top:0}); });
     return;
   }
@@ -884,7 +895,7 @@ function detailHTML(r, slug){
   const inx=(c.drug_interactions||[]).filter(x=>x.drug);
   const inxHtml=inx.length?`<div class="inx">${inx.map(x=>`<div class="r"><span class="d">${esc(x.drug)}</span>${x.severity?`<span class="sev ${(x.severity||'').toLowerCase()}">${esc(x.severity)}</span>`:''}<div style="color:var(--muted);margin-top:3px">${esc(x.effect||'')}</div></div>`).join('')}</div>`:'';
   const subs=(c.substitutes||[]).filter(x=>x.name);
-  const subsHtml=subs.length?`<div class="subs">${subs.map(x=>{ const sl=slugFromUrl(x.url); const href=sl?'#/m/'+encodeURIComponent(sl):(x.url||'#');
+  const subsHtml=subs.length?`<div class="subs">${subs.map(x=>{ const sl=slugFromUrl(x.url); const href=sl?'/m/'+encodeURIComponent(sl):(x.url||'#');
       return `<a class="sub" href="${esc(href)}" ${sl?'':'target="_blank" rel="noopener"'}><span>${esc(x.name)} <span style="color:var(--muted)">${esc(x.by||'')}</span></span>${x.composition_match?`<span class="cmp">${esc(x.composition_match)}</span>`:''}</a>`;}).join('')}</div>`:'';
   const faqs=(c.faqs||[]).filter(x=>x.question);
   const faqHtml=faqs.length?faqs.map(x=>`<details class="faq"><summary>${esc(x.question)}</summary><p>${esc(x.answer||'')}</p></details>`).join(''):'';
@@ -894,7 +905,7 @@ function detailHTML(r, slug){
   return `<div class="hero"><div class="thumb">${img?`<img src="${esc(img)}" alt="">`:'💊'}</div>
       <div style="min-width:0"><h2>${esc(r.name)}</h2><div class="sub">${esc(s.salt_composition||'')}</div>${priceLine}
         <div class="tags" style="margin-top:8px">${rxTag}${s.therapeutic_class?`<span class="tag klass">${esc(s.therapeutic_class)}</span>`:''}
-          ${inx.length?`<a class="tag klass" href="#/rx?s=${encodeURIComponent(r.slug)}" title="Check interactions">⇄ Check interactions</a>`:''}</div></div></div>
+          ${inx.length?`<a class="tag klass" href="/interactions?s=${encodeURIComponent(r.slug)}" title="Check interactions">⇄ Check interactions</a>`:''}</div></div></div>
     ${r.classification&&r.classification.length?`<div class="crumb">${r.classification.map(esc).join(' › ')}</div>`:''}
     <div class="kv">${kv}</div>
     ${blk('intro','Introduction',proseOrList(c.introduction))}
@@ -918,7 +929,7 @@ function detailHTML(r, slug){
 /* =============== drawer =============== */
 async function openDrawer(slug){
   $('#scrim').classList.add('on'); $('#drawer').classList.add('on'); document.body.style.overflow='hidden';
-  $('#dtitle').textContent='Loading…'; $('#openfull').href='#/m/'+encodeURIComponent(slug);
+  $('#dtitle').textContent='Loading…'; $('#openfull').href='/m/'+encodeURIComponent(slug);
   $('#dbody').innerHTML='<div class="loading">Loading…</div>';
   const r=await API.record(slug);
   $('#dtitle').textContent=r&&r.name?r.name:'Not found'; $('#dbody').innerHTML=detailHTML(r,slug); $('#dbody').scrollTop=0;
@@ -936,7 +947,29 @@ document.addEventListener('keydown',e=>{
 async function showDrugPage(slug){
   show('page'); $('#pagebody').innerHTML='<div class="loading">Loading…</div>'; $('#toc').innerHTML=''; $('#glance').innerHTML='';
   const r=await API.record(slug);
-  document.title=(r&&r.name?r.name:'Medicine')+' · OpenMedsDB';
+  const canon=ORIGIN+'/m/'+encodeURIComponent(slug);
+  if(!r||r.error){
+    setMeta('Medicine not found · OpenMedsDB', DEFAULT_DESC, canon);
+  }else{
+    const s=r.summary||{}, c=r.content||{};
+    const title=`${r.name}${s.salt_composition?' ('+s.salt_composition+')':''} — uses, side effects, dosage · OpenMedsDB`;
+    const lead=((Array.isArray(c.introduction)?c.introduction.join(' '):c.introduction)||'')
+      .replace(/^[A-Za-z][A-Za-z ]{0,24}:\s*/,'').split(/(?<=\.)\s/)[0];
+    const desc=`${r.name}${s.salt_composition?' contains '+s.salt_composition+'. ':' — '}${lead||'Uses, benefits, side effects, dosage, drug interactions and substitute brands.'}`;
+    const drug={"@context":"https://schema.org","@type":"Drug","name":r.name,"url":canon,"description":desc};
+    if(s.salt_composition) drug.activeIngredient=s.salt_composition;
+    if(s.non_proprietary_name) drug.nonProprietaryName=s.non_proprietary_name;
+    if(s.dosage_form) drug.dosageForm=s.dosage_form;
+    if(s.administration_route) drug.administrationRoute=s.administration_route;
+    if(s.marketer) drug.manufacturer={"@type":"Organization","name":s.marketer};
+    drug.prescriptionStatus = r.prescription_required==='prescription'
+      ? "https://schema.org/PrescriptionOnly" : "https://schema.org/OTC";
+    const faqs=(c.faqs||[]).filter(f=>f.question&&f.answer);
+    const ld = faqs.length ? [drug,{"@context":"https://schema.org","@type":"FAQPage",
+      "mainEntity":faqs.slice(0,12).map(f=>({"@type":"Question","name":f.question,
+        "acceptedAnswer":{"@type":"Answer","text":f.answer}}))}] : drug;
+    setMeta(title, desc, canon, ld);
+  }
   $('#pagebody').innerHTML=detailHTML(r,slug);
   $('#glance').innerHTML=(r&&!r.error)?glanceHTML(r):'';
   if(r&&!r.error){ pushRecent(r); buildToc(); }
@@ -951,9 +984,9 @@ function glanceHTML(r){
       <div style="margin-top:${price?'12px':'0'}">${row('Composition',s.salt_composition)}${row('Form',s.dosage_form)}${row('Route',s.administration_route)}
       ${row('Class',titleCase(s.therapeutic_class))}${row('Action',s.action_class)}${row('Marketer',s.marketer)}${row('Habit forming',s.habit_forming)}${row('Storage',s.storage)}</div></div>
     <div class="gcard"><h6>Actions</h6><div class="acts">
-      ${nInx?`<a class="ghostbtn" href="#/rx?s=${encodeURIComponent(r.slug)}">⇄ Check interactions (${nInx})</a>`:''}
+      ${nInx?`<a class="ghostbtn" href="/interactions?s=${encodeURIComponent(r.slug)}">⇄ Check interactions (${nInx})</a>`:''}
       ${nSub?`<a class="ghostbtn" href="#s-subs" onclick="document.getElementById('s-subs').scrollIntoView({behavior:'smooth'});return false">Substitutes (${nSub})</a>`:''}
-      ${s.therapeutic_class?`<a class="ghostbtn" href="#/?cls=${encodeURIComponent(s.therapeutic_class)}">More in this class</a>`:''}
+      ${s.therapeutic_class?`<a class="ghostbtn" href="/?cls=${encodeURIComponent(s.therapeutic_class)}">More in this class</a>`:''}
     </div></div>`;
 }
 function buildToc(){
@@ -968,13 +1001,16 @@ $('#sharebtn').onclick=async()=>{ try{ await navigator.clipboard.writeText(locat
 /* =============== interactions =============== */
 let inxSlugs=[];
 async function showInx(qs){
-  show('inx'); document.title='Interaction checker · OpenMedsDB';
+  show('inx');
+  setMeta('Drug interaction checker · OpenMedsDB',
+    'Check whether two or more medicines interact. Each medicine’s documented interactions are cross-checked against the others’ active salts and ranked by severity.',
+    ORIGIN+'/interactions');
   inxSlugs=(new URLSearchParams(qs).get('s')||'').split(',').filter(Boolean);
   await runInx();
 }
 async function runInx(){
   const qs=inxSlugs.length?'?s='+inxSlugs.map(encodeURIComponent).join(','):'';
-  const target='#/rx'+qs; if(location.hash!==target){ _suppressHash=true; location.hash=target; }
+  const target='/interactions'+qs; if(location.pathname+location.search!==target) history.replaceState(null,'',target);
   const out=$('#inx-out');
   if(!inxSlugs.length){ $('#inx-chips').innerHTML=''; out.innerHTML='<div class="empty">Add medicines above to begin. Tip: open any medicine and click <b>⇄ Check interactions</b>.</div>'; return; }
   out.innerHTML='<div class="loading">Checking…</div>';
@@ -986,7 +1022,7 @@ async function runInx(){
   const summary=`<div class="isum"><div class="k"><b>${d.medicines.length}</b><span>medicines</span></div><div class="k severe"><b>${cnt('severe')}</b><span>severe</span></div><div class="k moderate"><b>${cnt('moderate')}</b><span>moderate</span></div><div class="k mild"><b>${cnt('mild')}</b><span>mild</span></div></div>`;
   if(!d.interactions.length){ out.innerHTML=summary+`<div class="okbox">✓ No interactions listed between these medicines in our data. This does not guarantee safety — confirm with a pharmacist.</div>`; return; }
   out.innerHTML=summary+`<div class="ires">${d.interactions.map(i=>`<div class="r">
-      <div class="pair"><a href="#/m/${encodeURIComponent(i.a.slug)}">${esc(i.a.name)}</a><span class="x">⇄</span><a href="#/m/${encodeURIComponent(i.b.slug)}">${esc(i.b.name)}</a>${i.severity?`<span class="sev ${(i.severity||'').toLowerCase()}">${esc(i.severity)}</span>`:''}</div>
+      <div class="pair"><a href="/m/${encodeURIComponent(i.a.slug)}">${esc(i.a.name)}</a><span class="x">⇄</span><a href="/m/${encodeURIComponent(i.b.slug)}">${esc(i.b.name)}</a>${i.severity?`<span class="sev ${(i.severity||'').toLowerCase()}">${esc(i.severity)}</span>`:''}</div>
       <div class="via">${esc(i.a.name)} lists an interaction with <b>${esc(i.matched_drug)}</b>${i.route?' · '+esc(i.route):''}</div>
       <div class="eff">${esc(i.effect||'')}</div></div>`).join('')}</div>`;
 }
@@ -996,8 +1032,8 @@ attachSuggest($('#inx-q'),$('#inx-sugg'),{onPick:m=>{ if(!inxSlugs.includes(m.sl
 attachSuggest($('#q'),$('#sugg'),{
   onPick:m=>{ if(view==='inx'){ if(!inxSlugs.includes(m.slug)) inxSlugs.push(m.slug); $('#q').value=''; runInx(); }
               else if(view==='browse'){ openDrawer(m.slug); }
-              else { location.hash='#/m/'+encodeURIComponent(m.slug); } },
-  onSubmit:q=>{ state.q=q; state.page=1; if(view==='browse') run(); else location.hash='#/?q='+encodeURIComponent(q); },
+              else { nav('/m/'+encodeURIComponent(m.slug)); } },
+  onSubmit:q=>{ state.q=q; state.page=1; if(view==='browse') run(); else nav('/?q='+encodeURIComponent(q)); },
   footer:q=>`See all results for “${esc(q)}” →`
 });
 $('#q').addEventListener('input',()=>{ if(view==='browse'){ state.q=$('#q').value.trim(); state.all=0; state.page=1; run(); } });
@@ -1011,26 +1047,62 @@ $('#sidetog').onclick=()=>$('#side').classList.add('open'); $('#closeside').oncl
 function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about';
   $$('.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.nav===(v==='page'?'':v))); }
 
-/* =============== hash router =============== */
-let _suppressHash=false;
+/* =============== SEO metadata =============== */
+const ORIGIN='https://openmedsdb.in';
+const DEFAULT_DESC='OpenMedsDB — a free, searchable reference for medicines in India: composition, uses, side effects, dosage, drug interactions, substitutes and safety advice.';
+function setMeta(title, desc, canonical, jsonld){
+  desc=(desc||DEFAULT_DESC).replace(/\s+/g,' ').trim().slice(0,300);
+  canonical=canonical||ORIGIN+location.pathname;
+  document.title=title;
+  $('#m-desc').content=desc; $('#m-ogdesc').content=desc;
+  $('#m-ogtitle').content=title;
+  $('#m-canon').href=canonical; $('#m-ogurl').content=canonical;
+  const old=$('#ld'); if(old) old.remove();
+  if(jsonld){ const sc=document.createElement('script'); sc.type='application/ld+json'; sc.id='ld';
+    sc.textContent=JSON.stringify(jsonld); document.head.appendChild(sc); }
+}
+
+/* =============== path router =============== */
+function nav(url, replace){
+  if(replace) history.replaceState(null,'',url); else history.pushState(null,'',url);
+  route();
+}
 function route(){
-  if(_suppressHash){ _suppressHash=false; return; }
   closeDrawer();
-  const h=location.hash.replace(/^#\/?/,'');
-  if(h.startsWith('m/')){ showDrugPage(decodeURIComponent(h.slice(2).split('?')[0])); return; }
-  if(h==='rx'||h.startsWith('rx?')){ showInx(h.includes('?')?h.slice(h.indexOf('?')+1):''); return; }
-  if(h==='about'){ show('about'); document.title='About · OpenMedsDB'; window.scrollTo(0,0); return; }
-  // browse
-  show('browse'); document.title='OpenMedsDB';
-  const p=new URLSearchParams(h.startsWith('?')?h.slice(1):'');
+  const path=decodeURIComponent(location.pathname), qs=location.search.replace(/^\?/,'');
+  if(path.startsWith('/m/')){ showDrugPage(path.slice(3)); return; }
+  if(path==='/interactions'){ showInx(qs); return; }
+  if(path==='/about'){
+    show('about'); window.scrollTo(0,0);
+    setMeta('About · OpenMedsDB','About OpenMedsDB — a free medicine reference compiled by Sanket Patil.',ORIGIN+'/about');
+    return;
+  }
+  // browse ("/" and anything unmatched)
+  show('browse');
+  const p=new URLSearchParams(qs);
   state={q:'',rx:'',type:'',cls:'',form:'',sort:'',all:0,page:1,view:state.view};
   for(const k of ['q','rx','type','cls','form','sort']) if(p.get(k)) state[k]=p.get(k);
   if(p.get('all')) state.all=1;
   if(p.get('page')) state.page=Math.max(1,parseInt(p.get('page'))||1);
   $('#q').value=state.q; $('#sort').value=state.sort;
+  const t = state.q ? `${state.q} — medicines · OpenMedsDB`
+          : state.cls ? `${titleCase(state.cls)} medicines · OpenMedsDB`
+          : state.form ? `${state.form} medicines · OpenMedsDB`
+          : 'OpenMedsDB — medicine composition, uses, side effects & interactions';
+  setMeta(t, DEFAULT_DESC, ORIGIN+(qs?location.pathname+location.search:'/'),
+    {"@context":"https://schema.org","@type":"WebSite","name":"OpenMedsDB","url":ORIGIN,
+     "potentialAction":{"@type":"SearchAction","target":ORIGIN+"/?q={q}","query-input":"required name=q"}});
   runNow();
 }
-window.addEventListener('hashchange',route);
+window.addEventListener('popstate',route);
+document.addEventListener('click',e=>{
+  if(e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+  const a=e.target.closest('a'); if(!a) return;
+  const href=a.getAttribute('href');
+  if(!href||href[0]==='#'||a.target==='_blank'||a.hasAttribute('download')) return;
+  if(a.host!==location.host) return;
+  e.preventDefault(); nav(a.pathname+a.search);
+});
 
 (function boot(){
   loadStats();

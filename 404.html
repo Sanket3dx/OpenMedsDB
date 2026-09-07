@@ -1,3 +1,9 @@
-<!doctype html><meta charset="utf-8"><title>Redirecting…</title>
-<script>location.replace(location.pathname.replace(/\/[^/]*$/,'/')+'#/');</script>
-<a href="/#/">Medicine Reference →</a>
+<!doctype html><meta charset="utf-8"><title>OpenMedsDB</title>
+<script>
+  /* GitHub Pages / static-host fallback: remember the requested path,
+     bounce to "/", and index.html restores it. Cloudflare Pages serves
+     index.html directly (200) so this file is never hit there. */
+  try { sessionStorage.setItem('spa_path', location.pathname + location.search); } catch (e) {}
+  location.replace('/');
+</script>
+<a href="/">OpenMedsDB →</a>
