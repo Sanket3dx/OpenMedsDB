@@ -3,7 +3,7 @@
 A free, searchable reference for medicines available in India — composition,
 uses, side effects, dosage, drug interactions, substitutes and safety advice.
 
-**Live site:** _(add your deployment URL here)_
+**Live site:** https://openmedsdb.in
 
 Compiled & maintained by **Sanket Patil**.
 
