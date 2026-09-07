@@ -262,6 +262,39 @@
   .sitefoot b{color:var(--heading)}
   .sitefoot .disc{color:var(--faint)}
 
+  /* ---------- landing ---------- */
+  .lp{max-width:1060px}
+  .lp .hero{padding:34px 0 26px;border-bottom:1px solid var(--border);margin-bottom:26px}
+  .lp .hero h1{margin:0 0 10px;font-size:clamp(24px,3.2vw,34px);line-height:1.12;letter-spacing:-.02em;color:var(--heading)}
+  .lp .hero .tag{color:var(--accent-ink)}
+  .lp .hero p{margin:0;color:var(--muted);font-size:15.5px;max-width:62ch;line-height:1.55}
+  .lp .stats{margin-top:20px;display:flex;gap:22px;flex-wrap:wrap}
+  .lp .stats div{display:flex;flex-direction:column;line-height:1.2}
+  .lp .stats b{font-size:20px;color:var(--heading);font-weight:700;font-variant-numeric:tabular-nums}
+  .lp .stats span{font-size:12px;color:var(--muted)}
+  .lp .try{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .lp .try>span{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+  .cbtn{border:1px solid var(--border-strong);background:var(--panel);color:var(--text);border-radius:999px;padding:6px 13px;font:13px/1 var(--font);cursor:pointer;transition:.12s;white-space:nowrap}
+  .cbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-weak)}
+  .cbtn em{font-style:normal;color:var(--faint);font-size:11px;margin-left:5px}
+  .lp .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:30px}
+  @media(max-width:820px){.lp .feats{grid-template-columns:1fr}}
+  .lp .feat{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+  .lp .feat.act{cursor:pointer} .lp .feat.act:hover{border-color:var(--accent);background:var(--accent-weak)}
+  .lp .feat i{font-size:20px;font-style:normal}
+  .lp .feat b{display:block;margin:9px 0 4px;color:var(--heading);font-size:14.5px}
+  .lp .feat p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+  .lp .sec{margin-bottom:28px}
+  .lp .sec>h4{margin:0 0 12px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700;display:flex;align-items:baseline;gap:10px}
+  .lp .sec>h4 a{font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--accent)}
+  .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:10px}
+  .cat{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;font:inherit;text-align:left;transition:.12s}
+  .cat:hover{border-color:var(--accent);background:var(--accent-weak)}
+  .cat .ic{font-size:17px;flex:none;width:22px;text-align:center}
+  .cat .t{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cat .n{color:var(--faint);font-size:11px;font-variant-numeric:tabular-nums}
+  .chiprow{display:flex;gap:8px;flex-wrap:wrap}
+
   @media print{
     header,.sitefoot,.topline,.toc,.drawer,.scrim,#browse,#inx{display:none!important}
     body{background:#fff}
@@ -373,7 +406,7 @@
       <p>I'm Sanket Patil, a software engineer based in Pune, India, working at Plus91 Technologies. I spend most of my time on backend and systems programming — primarily in Go and Rust — building things like storage engines, caching proxies and other performance-sensitive infrastructure. I'm an open-source enthusiast, and I enjoy taking something complicated and making it simple to use.</p>
       <p>OpenMedsDB came out of that same instinct. Reliable drug information exists, but it's scattered across package inserts, drug indexes and clinical references that aren't especially easy to search or cross-check. This site pulls that information into one clean, fast, no-login interface — including a drug interaction checker that cross-references each medicine's listed interactions against the active salts of everything else you add.</p>
       <div class="stack">
-        <span>Go</span><span>Rust</span><span>Python</span><span>JavaScript</span><span>PostgreSQL</span><span>Redis</span><span>RocksDB</span><span>Linux</span>
+        <span>Go</span><span>Rust</span><span>Python</span><span>JavaScript</span><span>PostgreSQL</span><span>Redis</span><span>Linux</span>
       </div>
     </section>
 
@@ -629,8 +662,11 @@ const runNow=async()=>{
   if(d.landing){
     renderFacets(d.facets); renderActive(); renderRecent();
     $('#count').textContent='';
-    out.innerHTML=landingHTML(d.facets);
+    out.innerHTML=landingHTML(d.facets, await API.stats());
     $$('#results [data-cls]').forEach(el=>el.onclick=()=>{ state.cls=el.dataset.cls; state.page=1; run(); });
+    $$('#results [data-form]').forEach(el=>el.onclick=()=>{ state.form=el.dataset.form; state.page=1; run(); });
+    $$('#results [data-q]').forEach(el=>el.onclick=()=>{ const q=el.dataset.q; $('#q').value=q; state.q=q; state.page=1; run(); });
+    $$('#results [data-go]').forEach(el=>el.onclick=()=>{ location.hash='#/'+el.dataset.go; });
     return;
   }
   renderFacets(d.facets); renderActive();
@@ -646,12 +682,67 @@ const runNow=async()=>{
 };
 const run=debounce(runNow,50);
 
-function landingHTML(f){
-  const tiles=(f.classes||[]).slice(0,18).map(c=>`<div class="card" data-cls="${esc(c.v)}" style="cursor:pointer">
-    <div class="thumb">🗂️</div>
-    <div style="min-width:0;flex:1"><h3>${esc(titleCase(c.v))}</h3><div class="salt">${c.n.toLocaleString()} medicines</div></div></div>`).join('');
-  return `<div class="empty" style="padding:26px 0 16px">Search by <b>brand name</b>, <b>salt</b> (e.g. “paracetamol”), <b>manufacturer</b> or <b>class</b> — or browse a category:</div>
-    <div class="grid">${tiles}</div>`;
+const CLASS_ICON={
+  "ANTI INFECTIVES":"🦠","GASTRO INTESTINAL":"🩹","PAIN ANALGESICS":"💊","NEURO CNS":"🧠",
+  "RESPIRATORY":"🫁","CARDIAC":"❤️","ANTI DIABETIC":"🩸","DERMA":"🧴","HORMONES":"⚗️",
+  "VITAMINS MINERALS NUTRIENTS":"🍊","GYNAECOLOGICAL":"👶","OPHTHAL":"👁️","BLOOD RELATED":"🩸",
+  "ANTI NEOPLASTICS":"🎗️","UROLOGY":"💧","ANTI MALARIALS":"🦟","SEX STIMULANTS REJUVENATORS":"💪",
+  "OPHTHAL OTOLOGICALS":"👂","VACCINES":"💉","ANTHELMINTICS":"🪱","OTOLOGICALS":"👂",
+  "STOMATOLOGICALS":"🦷","RESPIRATORY ":"🫁"
+};
+const TRY_QUERIES=["Paracetamol","Pantoprazole","Azithromycin","Dolo 650","Metformin",
+  "Amoxicillin","Cetirizine","Atorvastatin","Montelukast","Amlodipine","Augmentin","Pan 40"];
+
+function landingHTML(f, st){
+  const classes=f.classes||[], forms=f.forms||[];
+  const n = st && st.count ? st.count : (classes.reduce((a,c)=>a+c.n,0));
+  const rx = st ? st.prescription : 0;
+
+  const stat=(v,l)=>`<div><b>${(v||0).toLocaleString()}</b><span>${l}</span></div>`;
+  const tryChips=TRY_QUERIES.map(q=>`<button class="cbtn" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+
+  const cats=classes.slice(0,18).map(c=>{
+    const ic=CLASS_ICON[c.v]||CLASS_ICON[(c.v||'').trim()]||'💊';
+    return `<button class="cat" data-cls="${esc(c.v)}"><span class="ic">${ic}</span>
+      <span class="t">${esc(titleCase(c.v))}</span><span class="n">${c.n.toLocaleString()}</span></button>`;
+  }).join('');
+  const formChips=forms.slice(0,16).map(x=>
+    `<button class="cbtn" data-form="${esc(x.v)}">${esc(x.v)}<em>${x.n.toLocaleString()}</em></button>`).join('');
+
+  return `<div class="lp">
+    <div class="hero">
+      <h1>Every medicine in India, <span class="tag">explained</span>.</h1>
+      <p>Look up what a medicine contains, what it treats, its side effects and dosage,
+         which drugs it interacts with, and which brands are cheaper — free, no sign-up.</p>
+      <div class="stats">
+        ${stat(n,'medicines')}
+        ${stat(rx,'prescription')}
+        ${stat(n-rx,'over the counter')}
+        ${stat(classes.length,'therapeutic classes')}
+        ${stat(forms.length,'dosage forms')}
+      </div>
+      <div class="try"><span>Try</span>${tryChips}</div>
+    </div>
+
+    <div class="feats">
+      <div class="feat"><i>🔎</i><b>Search by salt or brand</b>
+        <p>Type “paracetamol” to see every brand, or “Dolo 650” to jump straight to it. Manufacturer and class work too.</p></div>
+      <div class="feat act" data-go="rx"><i>⇄</i><b>Drug interaction checker</b>
+        <p>Add two or more medicines — each one’s known interactions are checked against the others’ salts, ranked by severity.</p></div>
+      <div class="feat"><i>💰</i><b>Cheaper substitutes</b>
+        <p>Every medicine page lists equivalent brands with the same composition and flags which cost less.</p></div>
+    </div>
+
+    <div class="sec">
+      <h4>Browse by therapeutic class</h4>
+      <div class="cats">${cats}</div>
+    </div>
+
+    <div class="sec">
+      <h4>Browse by dosage form</h4>
+      <div class="chiprow">${formChips}</div>
+    </div>
+  </div>`;
 }
 
 function card(m){
