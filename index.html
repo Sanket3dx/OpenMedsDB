@@ -15,6 +15,21 @@
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231667c8'/%3E%3Ctext x='16' y='23' font-size='20' font-family='Georgia,serif' fill='white' text-anchor='middle'%3E%E2%84%9E%3C/text%3E%3C/svg%3E">
 <title>OpenMedsDB — medicine composition, uses, side effects &amp; interactions</title>
+<!-- Google Analytics (GA4). Replace G-XXXXXXXXXX with your Measurement ID from analytics.google.com -->
+<script>
+  window.GA_ID = "G-XXXXXXXXXX";
+  if (GA_ID && GA_ID.indexOf("XXXX") === -1) {
+    var s = document.createElement("script"); s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ dataLayer.push(arguments); };
+    gtag("js", new Date());
+    gtag("config", GA_ID, { send_page_view: false });  // SPA: page_view sent manually per route
+  } else {
+    window.gtag = function(){};
+  }
+</script>
 <style>
   :root{
     color-scheme:light;
@@ -1060,6 +1075,7 @@ function setMeta(title, desc, canonical, jsonld){
   const old=$('#ld'); if(old) old.remove();
   if(jsonld){ const sc=document.createElement('script'); sc.type='application/ld+json'; sc.id='ld';
     sc.textContent=JSON.stringify(jsonld); document.head.appendChild(sc); }
+  if(window.gtag) gtag('event','page_view',{page_title:title, page_location:canonical});
 }
 
 /* =============== path router =============== */
