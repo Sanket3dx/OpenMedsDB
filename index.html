@@ -277,6 +277,8 @@
   .cbtn{border:1px solid var(--border-strong);background:var(--panel);color:var(--text);border-radius:999px;padding:6px 13px;font:13px/1 var(--font);cursor:pointer;transition:.12s;white-space:nowrap}
   .cbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-weak)}
   .cbtn em{font-style:normal;color:var(--faint);font-size:11px;margin-left:5px}
+  .cbtn.viewall{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .cbtn.viewall:hover{background:var(--accent-hover)}
   .lp .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:30px}
   @media(max-width:820px){.lp .feats{grid-template-columns:1fr}}
   .lp .feat{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
@@ -517,8 +519,24 @@ const API={
     return null; // -> landing
   },
 
-  async search({q,rx,type,cls,form,sort,page,limit}){
+  async _browseAll({page,limit}){
+    if(!_allShards) _allShards=(await getJSON('search/_shards.json'))||[];
+    const need=page*limit+1;
+    while(_allRows.length<need && _allIdx<_allShards.length){
+      _allRows=_allRows.concat((await getJSON('search/'+_allShards[_allIdx]+'.json'))||[]);
+      _allIdx++;
+    }
+    const st=await this.stats();
+    const total=st.count||_allRows.length;
+    const pages=Math.max(1,Math.ceil(total/limit));
+    page=Math.max(1,Math.min(page,pages));
+    return {all:true,total,page,pages,limit,facets:_fc,
+            results:_allRows.slice((page-1)*limit,(page-1)*limit+limit)};
+  },
+
+  async search({q,rx,type,cls,form,sort,page,limit,all}){
     if(!_fc) _fc=await this.facets();
+    if(all && !q && !cls && !form) return await this._browseAll({page,limit});
     let rows=await this._base({q,cls,form});
     if(rows===null) return {landing:true,facets:_fc};
 
@@ -587,6 +605,7 @@ const API={
   }
 };
 let _fc=null;
+let _allShards=null, _allRows=[], _allIdx=0;   // lazy A-Z stream for "Browse all"
 function facetsOf(rows, glob){
   const C={},F={},R={};
   for(const m of rows){
@@ -599,7 +618,7 @@ function facetsOf(rows, glob){
 }
 
 /* =============== state =============== */
-let state={q:'',rx:'',type:'',cls:'',form:'',sort:'',page:1,view:store.get('view','cards')};
+let state={q:'',rx:'',type:'',cls:'',form:'',sort:'',all:0,page:1,view:store.get('view','cards')};
 let view='browse';
 
 /* =============== stats =============== */
@@ -648,6 +667,7 @@ function attachSuggest(input, box, {onPick, onSubmit, footer}){
 function syncUrl(){
   const p=new URLSearchParams();
   for(const k of ['q','rx','type','cls','form','sort']) if(state[k]) p.set(k,state[k]);
+  if(state.all) p.set('all','1');
   if(state.page>1) p.set('page',state.page);
   const qs=p.toString();
   const target='#/'+(qs?'?'+qs:'');
@@ -667,10 +687,13 @@ const runNow=async()=>{
     $$('#results [data-form]').forEach(el=>el.onclick=()=>{ state.form=el.dataset.form; state.page=1; run(); });
     $$('#results [data-q]').forEach(el=>el.onclick=()=>{ const q=el.dataset.q; $('#q').value=q; state.q=q; state.page=1; run(); });
     $$('#results [data-go]').forEach(el=>el.onclick=()=>{ location.hash='#/'+el.dataset.go; });
+    $$('#results [data-all]').forEach(el=>el.onclick=()=>{ state.all=1; state.page=1; run(); window.scrollTo({top:0}); });
     return;
   }
   renderFacets(d.facets); renderActive();
-  $('#count').textContent=d.total.toLocaleString()+' medicine'+(d.total===1?'':'s');
+  $('#count').textContent = d.all
+    ? `All ${d.total.toLocaleString()} medicines · page ${d.page.toLocaleString()} of ${d.pages.toLocaleString()}`
+    : d.total.toLocaleString()+' medicine'+(d.total===1?'':'s');
   if(!d.results.length){ out.innerHTML='<div class="empty">No medicines match. Try a salt name like “paracetamol”, or clear a filter.</div>'; renderRecent(); return; }
   out.innerHTML = state.view==='table' ? table(d.results) : `<div class="grid">${d.results.map(card).join('')}</div>`;
   out.querySelectorAll('[data-slug]').forEach(el=>el.onclick=()=>openDrawer(el.dataset.slug));
@@ -721,7 +744,9 @@ function landingHTML(f, st){
         ${stat(classes.length,'therapeutic classes')}
         ${stat(forms.length,'dosage forms')}
       </div>
-      <div class="try"><span>Try</span>${tryChips}</div>
+      <div class="try"><span>Try</span>${tryChips}
+        <button class="cbtn viewall" data-all="1">Browse all ${n.toLocaleString()} →</button>
+      </div>
     </div>
 
     <div class="feats">
@@ -782,19 +807,20 @@ function renderFacets(f){
   const shown=clsShowAll?cls:cls.slice(0,10);
   $('#f-cls').innerHTML=shown.map(x=>row('cls',x.v,x.n,titleCase(x.v))).join('')+(cls.length>10?`<div class="fmore" id="clsmore">${clsShowAll?'Show less':'Show all '+cls.length}</div>`:'');
   $('#f-form').innerHTML=(f.forms||[]).slice(0,12).map(x=>row('form',x.v,x.n)).join('');
-  $$('.frow').forEach(el=>el.onclick=()=>{ const k=el.dataset.k,v=el.dataset.v; state[k]=state[k]===v?'':v; state.page=1; run(); if(innerWidth<900) $('#side').classList.remove('open'); });
+  $$('.frow').forEach(el=>el.onclick=()=>{ const k=el.dataset.k,v=el.dataset.v; state[k]=state[k]===v?'':v; state.all=0; state.page=1; run(); if(innerWidth<900) $('#side').classList.remove('open'); });
   const more=$('#clsmore'); if(more) more.onclick=()=>{clsShowAll=!clsShowAll; renderFacets(lastFacets);};
 }
 function renderActive(){
   const chips=[];
+  if(state.all) chips.push(['all','All medicines']);
   if(state.q) chips.push(['q','“'+state.q+'”']);
   if(state.rx) chips.push(['rx',state.rx==='prescription'?'Prescription':'Non-prescription']);
   if(state.cls) chips.push(['cls',titleCase(state.cls)]);
   if(state.form) chips.push(['form',state.form]);
   if(state.type) chips.push(['type',state.type]);
   $('#active').innerHTML=chips.map(([k,l])=>`<span class="pill">${esc(l)}<button data-k="${k}" aria-label="remove">✕</button></span>`).join(' ')+(chips.length>1?` <a href="#" id="clearall" style="font-size:12px">Clear all</a>`:'');
-  $$('#active .pill button').forEach(b=>b.onclick=()=>{ state[b.dataset.k]=''; if(b.dataset.k==='q') $('#q').value=''; state.page=1; run(); });
-  const ca=$('#clearall'); if(ca) ca.onclick=e=>{e.preventDefault(); for(const k of ['q','rx','type','cls','form']) state[k]=''; $('#q').value=''; state.page=1; run();};
+  $$('#active .pill button').forEach(b=>b.onclick=()=>{ const k=b.dataset.k; state[k]=(k==='all')?0:''; if(k==='q') $('#q').value=''; state.page=1; run(); });
+  const ca=$('#clearall'); if(ca) ca.onclick=e=>{e.preventDefault(); for(const k of ['q','rx','type','cls','form']) state[k]=''; state.all=0; $('#q').value=''; state.page=1; run();};
 }
 
 /* recently viewed */
@@ -951,7 +977,7 @@ attachSuggest($('#q'),$('#sugg'),{
   onSubmit:q=>{ state.q=q; state.page=1; if(view==='browse') run(); else location.hash='#/?q='+encodeURIComponent(q); },
   footer:q=>`See all results for “${esc(q)}” →`
 });
-$('#q').addEventListener('input',()=>{ if(view==='browse'){ state.q=$('#q').value.trim(); state.page=1; run(); } });
+$('#q').addEventListener('input',()=>{ if(view==='browse'){ state.q=$('#q').value.trim(); state.all=0; state.page=1; run(); } });
 
 /* =============== wiring =============== */
 $('#sort').onchange=e=>{state.sort=e.target.value; state.page=1; run();};
@@ -974,8 +1000,9 @@ function route(){
   // browse
   show('browse'); document.title='OpenMedsDB';
   const p=new URLSearchParams(h.startsWith('?')?h.slice(1):'');
-  state={q:'',rx:'',type:'',cls:'',form:'',sort:'',page:1,view:state.view};
+  state={q:'',rx:'',type:'',cls:'',form:'',sort:'',all:0,page:1,view:state.view};
   for(const k of ['q','rx','type','cls','form','sort']) if(p.get(k)) state[k]=p.get(k);
+  if(p.get('all')) state.all=1;
   if(p.get('page')) state.page=Math.max(1,parseInt(p.get('page'))||1);
   $('#q').value=state.q; $('#sort').value=state.sort;
   runNow();
