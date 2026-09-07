@@ -727,7 +727,7 @@ const runNow=async()=>{
     : d.total.toLocaleString()+' medicine'+(d.total===1?'':'s');
   if(!d.results.length){ out.innerHTML='<div class="empty">No medicines match. Try a salt name like “paracetamol”, or clear a filter.</div>'; renderRecent(); return; }
   out.innerHTML = state.view==='table' ? table(d.results) : `<div class="grid">${d.results.map(card).join('')}</div>`;
-  out.querySelectorAll('[data-slug]').forEach(el=>el.onclick=()=>openDrawer(el.dataset.slug));
+  out.querySelectorAll('[data-slug]').forEach(el=>el.onclick=()=>nav('/m/'+encodeURIComponent(el.dataset.slug)));
   if(d.pages>1){
     $('#pager').innerHTML=`<button ${d.page<=1?'disabled':''} data-p="${d.page-1}">← Prev</button><span>${d.page} / ${d.pages}</span><button ${d.page>=d.pages?'disabled':''} data-p="${d.page+1}">Next →</button>`;
     $$('#pager button').forEach(b=>b.onclick=()=>{state.page=+b.dataset.p; run(); window.scrollTo({top:0,behavior:'smooth'});});
@@ -879,7 +879,7 @@ function renderRecent(){
   if(!r.length||state.q||state.cls||state.form||state.rx){ box.hidden=true; return; }
   box.hidden=false;
   box.innerHTML=`<h5>Recently viewed <button id="clr-recent">clear</button></h5><div class="row">${r.map(x=>`<div class="rc" data-slug="${esc(x.slug)}"><b>${esc(x.name)}</b><span>${esc(x.salt||'')}</span></div>`).join('')}</div>`;
-  box.querySelectorAll('.rc').forEach(el=>el.onclick=()=>openDrawer(el.dataset.slug));
+  box.querySelectorAll('.rc').forEach(el=>el.onclick=()=>nav('/m/'+encodeURIComponent(el.dataset.slug)));
   $('#clr-recent').onclick=()=>{store.set('recent',[]); renderRecent();};
 }
 
@@ -1046,7 +1046,7 @@ attachSuggest($('#inx-q'),$('#inx-sugg'),{onPick:m=>{ if(!inxSlugs.includes(m.sl
 /* =============== header search =============== */
 attachSuggest($('#q'),$('#sugg'),{
   onPick:m=>{ if(view==='inx'){ if(!inxSlugs.includes(m.slug)) inxSlugs.push(m.slug); $('#q').value=''; runInx(); }
-              else if(view==='browse'){ openDrawer(m.slug); }
+              else if(view==='browse'){ nav('/m/'+encodeURIComponent(m.slug)); }
               else { nav('/m/'+encodeURIComponent(m.slug)); } },
   onSubmit:q=>{ state.q=q; state.page=1; if(view==='browse') run(); else nav('/?q='+encodeURIComponent(q)); },
   footer:q=>`See all results for “${esc(q)}” →`
