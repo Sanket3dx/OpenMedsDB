@@ -200,10 +200,23 @@
   .sev.severe{background:var(--rx-bg);color:var(--rx);border:1px solid var(--rx-bd)}
   .sev.moderate{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-bd)}
   .sev.mild{background:var(--otc-bg);color:var(--otc);border:1px solid var(--otc-bd)}
-  .detail details.faq{border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:8px;background:var(--panel)}
-  .detail details.faq[open]{background:var(--panel-2)}
-  .detail details.faq summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--heading)}
-  .detail details.faq p{margin:8px 0 0;color:var(--muted);font-size:13px}
+  .detail .faqlist{display:flex;flex-direction:column;gap:8px}
+  .detail details.faq{border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+  .detail details.faq:hover{border-color:var(--accent-bd)}
+  .detail details.faq[open]{border-color:var(--accent-bd);box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  .detail details.faq summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;gap:12px;padding:13px 15px;font-weight:600;font-size:13.5px;line-height:1.45;color:var(--heading);user-select:none}
+  .detail details.faq summary::-webkit-details-marker{display:none}
+  .detail details.faq[open] summary{padding-bottom:9px}
+  .detail details.faq summary .q{flex:1;min-width:0}
+  .detail details.faq summary:hover .q{color:var(--accent)}
+  .detail details.faq summary .ic{flex:none;width:16px;height:16px;position:relative;margin-top:2px}
+  .detail details.faq summary .ic::before,.detail details.faq summary .ic::after{content:"";position:absolute;background:var(--accent);border-radius:2px;transition:opacity .2s,transform .2s}
+  .detail details.faq summary .ic::before{top:7px;left:2px;width:12px;height:2px}
+  .detail details.faq summary .ic::after{left:7px;top:2px;width:2px;height:12px}
+  .detail details.faq[open] summary .ic::after{opacity:0;transform:scaleY(0)}
+  .detail details.faq .a{margin:0 15px;padding:11px 0 14px;border-top:1px solid var(--border);color:var(--text);font-size:13px;line-height:1.65;white-space:pre-wrap}
+  .detail details.faq[open] .a{animation:faqin .18s ease}
+  @keyframes faqin{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
   .detail .subs a.sub{display:flex;justify-content:space-between;gap:10px;padding:10px 13px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;color:var(--text);background:var(--panel)}
   .detail .subs a.sub:hover{border-color:var(--accent);text-decoration:none;background:var(--accent-weak)}
   .detail .subs .cmp{color:var(--muted);font-size:12px;white-space:nowrap}
@@ -336,8 +349,8 @@
     header,.sitefoot,.topline,.toc,.drawer,.scrim,#browse,#inx{display:none!important}
     body{background:#fff}
     .pwrap{padding:0;max-width:none} .pgrid{display:block} .pcard{border:0;padding:0}
-    .detail details.faq{break-inside:avoid} .detail details.faq[open] summary{font-weight:700}
-    .detail details.faq:not([open]) p{display:block}
+    .detail details.faq{break-inside:avoid;border-color:#ccc} .detail details.faq summary .ic{display:none}
+    .detail details.faq .a{display:block!important;animation:none}
   }
 </style>
 
@@ -921,7 +934,7 @@ function detailHTML(r, slug){
   const subsHtml=subs.length?`<div class="subs">${subs.map(x=>{ const sl=slugFromUrl(x.url); const href=sl?'/m/'+encodeURIComponent(sl):(x.url||'#');
       return `<a class="sub" href="${esc(href)}" ${sl?'':'target="_blank" rel="noopener"'}><span>${esc(x.name)} <span style="color:var(--muted)">${esc(x.by||'')}</span></span>${x.composition_match?`<span class="cmp">${esc(x.composition_match)}</span>`:''}</a>`;}).join('')}</div>`:'';
   const faqs=(c.faqs||[]).filter(x=>x.question);
-  const faqHtml=faqs.length?faqs.map(x=>`<details class="faq"><summary>${esc(x.question)}</summary><p>${esc(x.answer||'')}</p></details>`).join(''):'';
+  const faqHtml=faqs.length?`<div class="faqlist">${faqs.map((x,i)=>`<details class="faq"${i===0?' open':''}><summary><span class="q">${esc(x.question)}</span><span class="ic" aria-hidden="true"></span></summary><div class="a">${esc(x.answer||'')}</div></details>`).join('')}</div>`:'';
   const refs=(c.references||[]).filter(x=>x.text);
   const refHtml=refs.length?`<ul class="clean" style="font-size:12px;color:var(--muted)">${refs.map(x=>`<li>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.text)}</a>`:esc(x.text)}</li>`).join('')}</ul>`:'';
 
