@@ -229,8 +229,12 @@
   .detail details.faq .a{margin:0 15px;padding:11px 0 14px;border-top:1px solid var(--border);color:var(--text);font-size:13px;line-height:1.65;white-space:pre-wrap}
   .detail details.faq[open] .a{animation:faqin .18s ease}
   @keyframes faqin{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
-  .detail .subs a.sub{display:flex;justify-content:space-between;gap:10px;padding:10px 13px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;color:var(--text);background:var(--panel)}
-  .detail .subs a.sub:hover{border-color:var(--accent);text-decoration:none;background:var(--accent-weak)}
+  .detail .subs .sub{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--panel);overflow:hidden}
+  .detail .subs .sub:hover{border-color:var(--accent)}
+  .detail .subs .sub-main{flex:1;min-width:0;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 13px;color:var(--text)}
+  .detail .subs .sub-main:hover{background:var(--accent-weak);text-decoration:none}
+  .detail .subs .sub-vs{flex:none;display:flex;align-items:center;padding:0 13px;border-left:1px solid var(--border);color:var(--accent);font-size:12px;font-weight:600;white-space:nowrap}
+  .detail .subs .sub-vs:hover{background:var(--accent-weak);text-decoration:none}
   .detail .subs .cmp{color:var(--muted);font-size:12px;white-space:nowrap}
   .detail .subs .by{color:var(--muted);font-weight:400;font-size:12px}
   .detail .subs .cmp.down{color:var(--otc);font-weight:700}
@@ -314,6 +318,22 @@
   #hub .hub-intro{margin:0 0 4px;color:var(--muted);max-width:78ch;font-size:14px;line-height:1.6}
   #hub .toolbar{margin:14px 0}
   #hub .hub-foot{margin-top:20px;font-size:13px;font-weight:600}
+
+  /* ---------- compare ---------- */
+  #compare .pwrap{max-width:860px;margin:0 auto}
+  #compare #cmp-title{margin:0 0 8px;font-size:23px;line-height:1.25;letter-spacing:-.015em;color:var(--heading)}
+  #compare .hub-intro{margin:0 0 18px}
+  .cmp-verdict{border:1px solid var(--border-strong);border-left:4px solid var(--accent);border-radius:10px;padding:13px 16px;font-size:14px;line-height:1.6;color:var(--text);background:var(--panel)}
+  .cmp-verdict.same{border-left-color:var(--otc)} .cmp-verdict.diff,.cmp-verdict.dose,.cmp-verdict.partial{border-left-color:var(--warn)}
+  table.cmp{width:100%;border-collapse:collapse;font-size:13px}
+  table.cmp thead th{text-align:left;font-size:13px;font-weight:700;color:var(--heading);padding:9px 12px;border-bottom:2px solid var(--border-strong);vertical-align:bottom}
+  table.cmp thead th:first-child{width:148px}
+  table.cmp tbody th{text-align:left;font-weight:600;color:var(--muted);padding:9px 12px 9px 0;vertical-align:top;white-space:nowrap}
+  table.cmp tbody td{padding:9px 12px;color:var(--text);vertical-align:top;border-left:1px solid var(--border)}
+  table.cmp tbody tr+tr th,table.cmp tbody tr+tr td{border-top:1px solid var(--border)}
+  table.cmp tbody tr.diff{background:var(--accent-weak)}
+  .cmp-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
   .igrid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:24px;align-items:start}
   @media(max-width:1000px){.igrid{grid-template-columns:1fr}}
   .ipick{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:sticky;top:78px}
@@ -490,6 +510,16 @@
     <div class="toolbar"><span id="hub-count"></span><span class="spacer"></span></div>
     <div id="hub-results"></div>
     <div class="hub-foot" id="hub-foot"></div>
+  </div>
+</section>
+
+<!-- ================= COMPARE (medicine A vs medicine B) ================= -->
+<section id="compare" hidden>
+  <div class="pwrap">
+    <nav class="hcrumb" id="cmp-crumb"></nav>
+    <h1 id="cmp-title">Loading…</h1>
+    <p class="hub-intro" id="cmp-intro"></p>
+    <div id="cmp-body" class="detail"></div>
   </div>
 </section>
 
@@ -1027,6 +1057,7 @@ function subPriceDelta(cm){
   return /cheaper|less|lower/i.test(m[2]) ? -v : v;
 }
 const hubSlug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'x';
+const cmpPath=(a,b)=>'/compare/'+[a,b].sort().join('-vs-');
 const saltLink=(label,name)=>`<a href="/salt/${hubSlug(name)}">${esc(label)}</a>`;
 const mfrLink=(label,name)=>`<a href="/manufacturer/${hubSlug(name)}">${esc(label)}</a>`;
 const clink=(label,cls)=>`<a href="/class/${hubSlug(cls)}">${esc(label)}</a>`;
@@ -1107,7 +1138,8 @@ function substitutesBlock(r){
     let tag='';
     if(typeof x.delta==='number') tag=x.delta<0?`<span class="cmp down">${Math.abs(x.delta)}% cheaper</span>`
       :x.delta>0?`<span class="cmp up">${x.delta}% costlier</span>`:`<span class="cmp">same price</span>`;
-    return `<a class="sub" href="${esc(href)}" ${x.slug?'':'target="_blank" rel="noopener"'}><span>${esc(x.name)}${x.by?` <span class="by">${esc(x.by)}</span>`:''}</span>${tag}</a>`;
+    const vs=x.slug?`<a class="sub-vs" href="${esc(cmpPath(r.slug,x.slug))}">compare</a>`:'';
+    return `<div class="sub"><a class="sub-main" href="${esc(href)}" ${x.slug?'':'target="_blank" rel="noopener"'}><span>${esc(x.name)}${x.by?` <span class="by">${esc(x.by)}</span>`:''}</span>${tag}</a>${vs}</div>`;
   }).join('');
   return intro+`<div class="subs">${list}</div>`;
 }
@@ -1386,6 +1418,144 @@ async function showHub(urlKind, slug){
     itemList, crumbs]);
 }
 
+/* =============== compare (medicine A vs medicine B) =============== */
+const normSalts=comp=>saltComponents(comp).map(x=>x.name.toLowerCase().trim()).sort().join(' + ');
+const normFull=comp=>String(comp||'').toLowerCase().replace(/\s+/g,'').replace(/[×x]/g,'x');
+function packCount(label){ const m=String(label||'').match(/(\d+(?:\.\d+)?)\s*(tablet|capsule|ml|gm|g|sachet|drop|unit)/i); return m?parseFloat(m[1]):null; }
+function unitPrice(s){ const p=s.price_selling!=null?s.price_selling:s.price_mrp, n=packCount(s.pack_label); return (p!=null&&n)?p/n:null; }
+
+function compareHTML(ra, rb){
+  const sA=ra.summary||{}, cA=ra.content||{}, sB=rb.summary||{}, cB=rb.content||{};
+  const nA=ra.name, nB=rb.name;
+  const compsA=saltComponents(sA.salt_composition), compsB=saltComponents(sB.salt_composition);
+  const setA=new Set(compsA.map(x=>x.name.toLowerCase())), setB=new Set(compsB.map(x=>x.name.toLowerCase()));
+  const shared=[...setA].filter(x=>setB.has(x));
+  const sameSalts=normSalts(sA.salt_composition)===normSalts(sB.salt_composition) && setA.size>0;
+  const sameFull=normFull(sA.salt_composition)===normFull(sB.salt_composition) && !!sA.salt_composition;
+  const pA=sA.price_selling!=null?sA.price_selling:sA.price_mrp, pB=sB.price_selling!=null?sB.price_selling:sB.price_mrp;
+  const uA=unitPrice(sA), uB=unitPrice(sB);
+  let cheaper=null, cheapPct=0;
+  if(uA!=null&&uB!=null&&Math.abs(uA-uB)>0.001){ cheaper = uA<uB?nA:nB; cheapPct=Math.round(Math.abs(uA-uB)/Math.max(uA,uB)*100); }
+  else if(pA!=null&&pB!=null&&pA!==pB){ cheaper = pA<pB?nA:nB; cheapPct=Math.round(Math.abs(pA-pB)/Math.max(pA,pB)*100); }
+
+  // verdict
+  let vKind, vText;
+  if(sameFull){ vKind='same';
+    vText=`<b>${esc(nA)}</b> and <b>${esc(nB)}</b> have the <b>same active composition</b> (${esc(sA.salt_composition||'')}). A pharmacist can usually dispense one in place of the other.`
+      + (cheaper?` ${esc(cheaper)} works out about <b>${cheapPct}% cheaper</b>${uA!=null&&uB!=null?' per tablet/unit':''}.`:'');
+  } else if(sameSalts){ vKind='dose';
+    vText=`Both contain the same active ingredient${setA.size>1?'s':''} (${esc([...setA].join(', '))}) but at <b>different strengths</b>. They are not directly interchangeable — the right dose is a medical decision.`;
+  } else if(shared.length){ vKind='partial';
+    vText=`These are <b>related but not identical</b>. ${esc(nA)} contains ${esc(compsA.map(x=>x.name).join(' + ')||'—')}; ${esc(nB)} contains ${esc(compsB.map(x=>x.name).join(' + ')||'—')}. Do not treat them as substitutes without medical advice.`;
+  } else { vKind='diff';
+    vText=`${esc(nA)} and ${esc(nB)} are <b>different medicines</b> with no shared active ingredient. They are not substitutes; this comparison is for reference only.`;
+  }
+
+  // side-by-side fact rows
+  const rxLabel=r=>r==='prescription'?'Prescription (℞) only':'Over-the-counter';
+  const rows=[
+    ['Composition', sA.salt_composition, sB.salt_composition],
+    ['Dosage form', sA.dosage_form, sB.dosage_form],
+    ['Route', sA.administration_route, sB.administration_route],
+    ['Therapeutic class', sA.therapeutic_class&&titleCase(sA.therapeutic_class), sB.therapeutic_class&&titleCase(sB.therapeutic_class)],
+    ['Chemical class', sA.chemical_class, sB.chemical_class],
+    ['Prescription', rxLabel(ra.prescription_required), rxLabel(rb.prescription_required)],
+    ['Habit forming', sA.habit_forming, sB.habit_forming],
+    ['Manufacturer', sA.marketer, sB.marketer],
+    ['Pack', sA.pack_label, sB.pack_label],
+    ['Price (approx.)', pA!=null?rupee(pA):'', pB!=null?rupee(pB):''],
+    ['Price per tablet/unit', uA!=null?rupee(Math.round(uA*100)/100):'', uB!=null?rupee(Math.round(uB*100)/100):''],
+    ['Storage', sA.storage, sB.storage],
+    ['Country of origin', sA.country_of_origin, sB.country_of_origin],
+  ].filter(r=>r[1]||r[2]);
+  const tbl=`<div class="tblwrap"><table class="cmp"><thead><tr><th></th>
+      <th><a href="/m/${encodeURIComponent(ra.slug)}">${esc(nA)}</a></th>
+      <th><a href="/m/${encodeURIComponent(rb.slug)}">${esc(nB)}</a></th></tr></thead><tbody>
+    ${rows.map(([k,x,y])=>{ const d=(x||'')!==(y||'') ? ' class="diff"' : '';
+      return `<tr${d}><th>${esc(k)}</th><td>${esc(x||'—')}</td><td>${esc(y||'—')}</td></tr>`; }).join('')}
+    </tbody></table></div>`;
+
+  // shared clinical note
+  let clin='';
+  if(sameFull||sameSalts){
+    const use=proseOrList(cA.uses)||proseOrList(cB.uses);
+    const how=proseOrList(cA.how_it_works)||proseOrList(cB.how_it_works);
+    if(use||how) clin=`<section class="blk"><h4>What this composition does</h4>
+      <p class="li-note">Both medicines share the same active ingredient, so this applies to either. Reproduced from the manufacturers’ information.</p>
+      ${use?`<div class="li-b"><h5>Uses</h5>${use}</div>`:''}
+      ${how?`<div class="li-b"><h5>How it works</h5>${how}</div>`:''}</section>`;
+  }
+
+  // FAQs
+  const faqs=[];
+  faqs.push([`Do ${nA} and ${nB} have the same ingredients?`,
+    sameFull?`Yes — both contain ${sA.salt_composition}.`
+    :sameSalts?`They contain the same active ingredient${setA.size>1?'s':''} (${[...setA].join(', ')}) but at different strengths.`
+    :shared.length?`Partly — both contain ${shared.join(', ')}, but the full compositions differ.`
+    :`No. ${nA} contains ${sA.salt_composition||'a different ingredient'} and ${nB} contains ${sB.salt_composition||'a different ingredient'}.`]);
+  if(cheaper) faqs.push([`Which is cheaper, ${nA} or ${nB}?`,
+    `${cheaper} is about ${cheapPct}% cheaper${uA!=null&&uB!=null?' per tablet/unit':''} at listed prices (${rupee(pA)} vs ${rupee(pB)} per pack). Pharmacy prices vary.`]);
+  faqs.push([`Can I switch between ${nA} and ${nB}?`,
+    sameFull?`They have the same composition, so a pharmacist can usually substitute one for the other. Confirm with your doctor, especially for long-term or critical medication.`
+    :`Not on your own. They are ${sameSalts?'different strengths of the same drug':'different medicines'} — any switch should be decided by a doctor.`]);
+  faqs.push([`Are ${nA} and ${nB} prescription medicines?`,
+    `${nA} is ${ra.prescription_required==='prescription'?'prescription-only':'available over the counter'}; ${nB} is ${rb.prescription_required==='prescription'?'prescription-only':'available over the counter'}.`]);
+  if(sA.marketer||sB.marketer) faqs.push([`Who makes ${nA} and ${nB}?`,
+    `${nA} is marketed by ${sA.marketer||'an unlisted company'}; ${nB} by ${sB.marketer||'an unlisted company'}.`]);
+  const faqHtml=`<div class="faqlist">${faqs.map(([q,a],i)=>`<details class="faq"${i===0?' open':''}><summary><span class="q">${esc(q)}</span><span class="ic" aria-hidden="true"></span></summary><div class="a">${esc(a)}</div></details>`).join('')}</div>`;
+
+  return {vKind, faqs, html:`
+    <div class="cmp-verdict ${vKind}"><b>Bottom line.</b> ${vText}</div>
+    <section class="blk"><h4>Side by side</h4>${tbl}<p class="li-note">Rows highlighted where the two differ.</p></section>
+    ${clin}
+    <section class="blk"><h4>Frequently asked questions</h4>${faqHtml}</section>
+    <div class="cmp-acts">
+      <a class="ghostbtn" href="/m/${encodeURIComponent(ra.slug)}">Full page: ${esc(nA)} →</a>
+      <a class="ghostbtn" href="/m/${encodeURIComponent(rb.slug)}">Full page: ${esc(nB)} →</a>
+    </div>
+    <p class="prov">Comparison generated from OpenMedsDB’s structured data. Informational only, not medical advice — a doctor or pharmacist should decide whether two medicines are interchangeable for you.</p>`};
+}
+
+async function showCompare(rawA, rawB){
+  const slugs=[rawA, rawB].filter(Boolean).sort();
+  if(slugs.length!==2){ nav('/',true); return; }
+  const [sa, sb]=slugs, canonPath='/compare/'+slugs.join('-vs-'), canon=ORIGIN+canonPath;
+  if(decodeURIComponent(location.pathname)!==canonPath) history.replaceState(null,'',canonPath);
+  show('compare'); window.scrollTo(0,0);
+  $('#cmp-crumb').innerHTML=`<a href="/">Home</a> › <span>Compare</span>`;
+  $('#cmp-title').textContent='Loading comparison…'; $('#cmp-intro').textContent='';
+  $('#cmp-body').innerHTML='<div class="loading">Loading…</div>';
+  const [ra, rb]=await Promise.all([API.record(sa), API.record(sb)]);
+  const okA=ra&&!ra.error, okB=rb&&!rb.error;
+  if(!okA||!okB){
+    $('#cmp-title').textContent='Comparison unavailable';
+    $('#cmp-body').innerHTML=`<div class="empty">One or both of these medicines isn’t in the database.
+      ${okA?`<div style="margin-top:8px"><a href="/m/${encodeURIComponent(sa)}">${esc(ra.name)} →</a></div>`:''}
+      ${okB?`<div style="margin-top:8px"><a href="/m/${encodeURIComponent(sb)}">${esc(rb.name)} →</a></div>`:''}</div>`;
+    setMeta('Comparison unavailable · OpenMedsDB', DEFAULT_DESC, canon);
+    return;
+  }
+  const out=compareHTML(ra, rb);
+  const title=`${ra.name} vs ${rb.name}: ingredients, price & differences · OpenMedsDB`;
+  const desc=`Compare ${ra.name} and ${rb.name} — composition, strength, prescription status, price per tablet, manufacturer and whether they can be substituted.`;
+  $('#cmp-crumb').innerHTML=`<a href="/">Home</a> › <a href="/m/${encodeURIComponent(ra.slug)}">${esc(ra.name)}</a> › <span>vs ${esc(rb.name)}</span>`;
+  $('#cmp-title').textContent=`${ra.name} vs ${rb.name}`;
+  $('#cmp-intro').textContent=`Composition, price and practical differences between ${ra.name} and ${rb.name}, and whether one can replace the other.`;
+  $('#cmp-body').innerHTML=out.html;
+  pushRecent(ra); pushRecent(rb);
+  const ld=[
+    {"@context":"https://schema.org","@type":"WebPage","name":`${ra.name} vs ${rb.name}`,"url":canon,"description":desc,
+     "isPartOf":{"@type":"WebSite","name":"OpenMedsDB","url":ORIGIN+'/'}},
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":ORIGIN+'/'},
+      {"@type":"ListItem","position":2,"name":ra.name,"item":ORIGIN+'/m/'+encodeURIComponent(ra.slug)},
+      {"@type":"ListItem","position":3,"name":`vs ${rb.name}`,"item":canon}]},
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":out.faqs.slice(0,8).map(([q,a])=>(
+      {"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}}))}
+  ];
+  setMeta(title, desc, canon, ld);
+}
+
 /* =============== interactions =============== */
 let inxSlugs=[];
 async function showInx(qs){
@@ -1432,7 +1602,7 @@ $$('.viewtog button').forEach(b=>{ b.classList.toggle('on',b.dataset.v===state.v
 $('#clsq').oninput=e=>{clsFilter=e.target.value.trim().toLowerCase(); clsShowAll=!!clsFilter; if(lastFacets) renderFacets(lastFacets);};
 $('#sidetog').onclick=()=>$('#side').classList.add('open'); $('#closeside').onclick=()=>$('#side').classList.remove('open');
 
-function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about'; $('#hub').hidden=v!=='hub'; $('#doc').hidden=v!=='doc';
+function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about'; $('#hub').hidden=v!=='hub'; $('#doc').hidden=v!=='doc'; $('#compare').hidden=v!=='compare';
   $$('.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.nav===(v==='page'?'':v))); }
 
 /* =============== SEO metadata =============== */
@@ -1585,6 +1755,10 @@ function route(){
   if(path.startsWith('/m/')){ showDrugPage(path.slice(3)); return; }
   const hubM=path.match(/^\/(salt|class|manufacturer|form)\/([^/]+)\/?$/);
   if(hubM){ showHub(hubM[1], decodeURIComponent(hubM[2])); return; }
+  if(path.startsWith('/compare/')){
+    const pair=path.slice(9).replace(/\/$/,'').split('-vs-');
+    if(pair.length===2 && pair[0] && pair[1]){ showCompare(pair[0], pair[1]); return; }
+  }
   if(path==='/interactions'){ showInx(qs); return; }
   if(path==='/about'){
     show('about'); window.scrollTo(0,0);
