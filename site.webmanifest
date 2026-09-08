@@ -1,0 +1,20 @@
+{
+  "name": "OpenMedsDB",
+  "short_name": "OpenMedsDB",
+  "description": "A free, open medicine reference for India — composition, uses, side effects, dosage, drug interactions and substitutes.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1667c8",
+  "lang": "en-IN",
+  "categories": ["medical", "health", "reference"],
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "/favicon-96x96.png", "type": "image/png", "sizes": "96x96" },
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" },
+    { "src": "/icon-maskable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}
