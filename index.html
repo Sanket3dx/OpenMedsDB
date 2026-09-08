@@ -225,7 +225,39 @@
   .detail .subs a.sub{display:flex;justify-content:space-between;gap:10px;padding:10px 13px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;color:var(--text);background:var(--panel)}
   .detail .subs a.sub:hover{border-color:var(--accent);text-decoration:none;background:var(--accent-weak)}
   .detail .subs .cmp{color:var(--muted);font-size:12px;white-space:nowrap}
+  .detail .subs .by{color:var(--muted);font-weight:400;font-size:12px}
+  .detail .subs .cmp.down{color:var(--otc);font-weight:700}
+  .detail .subs .cmp.up{color:var(--muted)}
   .detail .notfound{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:28px;text-align:center}
+
+  /* ---------- computed analysis blocks (OpenMedsDB's own content) ---------- */
+  .detail .lead-sum{font-size:14.5px;line-height:1.62;color:var(--text);margin:14px 0 2px}
+  .detail .lead-sum a{font-weight:600}
+  .detail table.facts{width:100%;border-collapse:collapse;font-size:13px;margin-top:2px}
+  .detail table.facts th{text-align:left;font-weight:600;color:var(--muted);padding:8px 16px 8px 0;vertical-align:top;white-space:nowrap;width:1%}
+  .detail table.facts td{padding:8px 0;color:var(--text)}
+  .detail table.facts tr+tr th,.detail table.facts tr+tr td{border-top:1px solid var(--border)}
+  .detail table.facts .fx{color:var(--muted);font-weight:400}
+  .detail ul.comp{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+  .detail ul.comp li{border:1px solid var(--border);border-radius:8px;padding:10px 13px;background:var(--panel)}
+  .detail ul.comp li b{font-size:14px}
+  .detail .cnote{font-size:12px;color:var(--muted);margin-top:2px}
+  .detail .ix-sum{font-size:13px;line-height:1.6;color:var(--text);margin:0 0 10px}
+  .detail .rel{display:flex;flex-wrap:wrap;gap:8px}
+  .detail .rel a{font-size:12.5px;font-weight:600;padding:7px 12px;border:1px solid var(--border);border-radius:999px;background:var(--panel);color:var(--accent)}
+  .detail .rel a:hover{border-color:var(--accent);background:var(--accent-weak);text-decoration:none}
+  .detail .label-info{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+  .detail .label-info>h4{border-bottom-color:var(--border-strong)}
+  .detail .li-wrap>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);list-style:none;padding:2px 0}
+  .detail .li-wrap>summary::-webkit-details-marker{display:none}
+  .detail .li-wrap>summary::before{content:"▸ ";font-size:11px}
+  .detail .li-wrap[open]>summary::before{content:"▾ "}
+  .detail .li-wrap[open]>summary{margin-bottom:10px}
+  .detail .li-note{font-size:12px;color:var(--faint);margin:0 0 14px;font-style:italic}
+  .detail .li-b{margin-top:16px}
+  .detail .li-b:first-of-type{margin-top:0}
+  .detail .li-b>h5{margin:0 0 5px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .detail .prov{margin-top:26px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;line-height:1.6;color:var(--faint)}
 
   /* ---------- drawer ---------- */
   .scrim{position:fixed;inset:0;background:rgba(15,23,42,.4);opacity:0;pointer-events:none;transition:.2s;z-index:40}
@@ -267,6 +299,14 @@
   .ihero{margin-bottom:18px}
   .ihero h1{margin:0 0 4px;font-size:22px;letter-spacing:-.015em;color:var(--heading)}
   .ihero p{margin:0;color:var(--muted);max-width:70ch}
+
+  /* ---------- hub pages ---------- */
+  #hub .hcrumb{font-size:12px;color:var(--faint);margin-bottom:10px}
+  #hub .hcrumb a{color:var(--muted)}
+  #hub #hub-title{margin:0 0 8px;font-size:23px;line-height:1.25;letter-spacing:-.015em;color:var(--heading)}
+  #hub .hub-intro{margin:0 0 4px;color:var(--muted);max-width:78ch;font-size:14px;line-height:1.6}
+  #hub .toolbar{margin:14px 0}
+  #hub .hub-foot{margin-top:20px;font-size:13px;font-weight:600}
   .igrid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:24px;align-items:start}
   @media(max-width:1000px){.igrid{grid-template-columns:1fr}}
   .ipick{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:sticky;top:78px}
@@ -322,8 +362,8 @@
   .lp .stats span{font-size:12px;color:var(--muted)}
   .lp .try{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .lp .try>span{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
-  .cbtn{border:1px solid var(--border-strong);background:var(--panel);color:var(--text);border-radius:999px;padding:6px 13px;font:13px/1 var(--font);cursor:pointer;transition:.12s;white-space:nowrap}
-  .cbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-weak)}
+  .cbtn{border:1px solid var(--border-strong);background:var(--panel);color:var(--text);border-radius:999px;padding:6px 13px;font:13px/1 var(--font);cursor:pointer;transition:.12s;white-space:nowrap;text-decoration:none;display:inline-block}
+  .cbtn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-weak);text-decoration:none}
   .cbtn em{font-style:normal;color:var(--faint);font-size:11px;margin-left:5px}
   .cbtn.viewall{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
   .cbtn.viewall:hover{background:var(--accent-hover)}
@@ -343,7 +383,8 @@
   .lp .sec>h4{margin:0 0 12px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700;display:flex;align-items:baseline;gap:10px}
   .lp .sec>h4 a{font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--accent)}
   .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:10px}
-  .cat{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;font:inherit;text-align:left;transition:.12s}
+  .cat{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;font:inherit;text-align:left;transition:.12s;text-decoration:none}
+  .cat:hover{text-decoration:none}
   .cat:hover{border-color:var(--accent);background:var(--accent-weak)}
   .cat .ic{font-size:17px;flex:none;width:22px;text-align:center}
   .cat .t{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -423,6 +464,18 @@
     </div>
   </div>
 </article>
+
+<!-- ================= HUB (salt / class / manufacturer / form) ================= -->
+<section id="hub" hidden>
+  <div class="pwrap">
+    <nav class="hcrumb" id="hub-crumb"></nav>
+    <h1 id="hub-title">Loading…</h1>
+    <p class="hub-intro" id="hub-intro"></p>
+    <div class="toolbar"><span id="hub-count"></span><span class="spacer"></span></div>
+    <div id="hub-results"></div>
+    <div class="hub-foot" id="hub-foot"></div>
+  </div>
+</section>
 
 <!-- ================= INTERACTIONS ================= -->
 <section id="inx" hidden>
@@ -556,6 +609,7 @@ async function shardExists(name){
 const API={
   async stats(){ return (await getJSON('stats.json'))||{count:0,drugs:0,otc:0,prescription:0}; },
   async facets(){ return (await getJSON('facets.json'))||{classes:[],forms:[],rx:[]}; },
+  async hubs(){ return (await getJSON('hubs.json'))||{salt:[],mfr:[],class:[],form:[]}; },
   async record(slug){ const k=bundleKey(slug); const b=await getJSON('data/'+k.slice(0,2)+'/'+k+'.json'); return (b && b[slug]) || null; },
 
   async _base({q,cls,form}){
@@ -739,9 +793,7 @@ const runNow=async()=>{
   if(d.landing){
     renderFacets(d.facets); renderActive(); renderRecent();
     $('#count').textContent='';
-    out.innerHTML=landingHTML(d.facets, await API.stats());
-    $$('#results [data-cls]').forEach(el=>el.onclick=()=>{ state.cls=el.dataset.cls; state.page=1; run(); });
-    $$('#results [data-form]').forEach(el=>el.onclick=()=>{ state.form=el.dataset.form; state.page=1; run(); });
+    out.innerHTML=landingHTML(d.facets, await API.stats(), await API.hubs());
     $$('#results [data-q]').forEach(el=>el.onclick=()=>{ const q=el.dataset.q; $('#q').value=q; state.q=q; state.page=1; run(); });
     $$('#results [data-go]').forEach(el=>el.onclick=()=>{ nav('/interactions'); });
     $$('#results [data-all]').forEach(el=>el.onclick=()=>{ state.all=1; state.page=1; run(); window.scrollTo({top:0}); });
@@ -773,21 +825,24 @@ const CLASS_ICON={
 const TRY_QUERIES=["Paracetamol","Pantoprazole","Azithromycin","Dolo 650","Metformin",
   "Amoxicillin","Cetirizine","Atorvastatin","Montelukast","Amlodipine","Augmentin","Pan 40"];
 
-function landingHTML(f, st){
+function landingHTML(f, st, hubs){
   const classes=f.classes||[], forms=f.forms||[];
   const n = st && st.count ? st.count : (classes.reduce((a,c)=>a+c.n,0));
   const rx = st ? st.prescription : 0;
+  const salts=(hubs&&hubs.salt)||[];
 
   const stat=(v,l)=>`<div><b>${(v||0).toLocaleString()}</b><span>${l}</span></div>`;
   const tryChips=TRY_QUERIES.map(q=>`<button class="cbtn" data-q="${esc(q)}">${esc(q)}</button>`).join('');
 
   const cats=classes.slice(0,18).map(c=>{
     const ic=CLASS_ICON[c.v]||CLASS_ICON[(c.v||'').trim()]||'💊';
-    return `<button class="cat" data-cls="${esc(c.v)}"><span class="ic">${ic}</span>
-      <span class="t">${esc(titleCase(c.v))}</span><span class="n">${c.n.toLocaleString()}</span></button>`;
+    return `<a class="cat" href="/class/${hubSlug(c.v)}"><span class="ic">${ic}</span>
+      <span class="t">${esc(titleCase(c.v))}</span><span class="n">${c.n.toLocaleString()}</span></a>`;
   }).join('');
   const formChips=forms.slice(0,16).map(x=>
-    `<button class="cbtn" data-form="${esc(x.v)}">${esc(x.v)}<em>${x.n.toLocaleString()}</em></button>`).join('');
+    `<a class="cbtn" href="/form/${hubSlug(x.v)}">${esc(x.v)}<em>${x.n.toLocaleString()}</em></a>`).join('');
+  const saltChips=salts.slice(0,28).map(([slug,v,c])=>
+    `<a class="cbtn" href="/salt/${esc(slug)}">${esc(v)}<em>${c.toLocaleString()}</em></a>`).join('');
 
   return `<div class="lp">
     <div class="hero">
@@ -837,6 +892,11 @@ function landingHTML(f, st){
       <h4>Browse by therapeutic class</h4>
       <div class="cats">${cats}</div>
     </div>
+
+    ${saltChips?`<div class="sec">
+      <h4>Browse by active ingredient</h4>
+      <div class="chiprow">${saltChips}</div>
+    </div>`:''}
 
     <div class="sec">
       <h4>Browse by dosage form</h4>
@@ -917,6 +977,155 @@ function proseOrList(v){
 }
 function safetyClass(label){ const l=(label||'').toLowerCase(); if(l.includes('unsafe'))return 'unsafe'; if(l==='safe'||l.startsWith('safe'))return 'safe'; return ''; }
 
+/* ---- computed content: analysis and structure built from our own fields,
+   not reproduced prose. Used as the primary content of every medicine page. ---- */
+function saltComponents(comp){
+  if(!comp) return [];
+  return String(comp).split(/\s*\+\s*/).map(p=>{
+    const m=p.match(/^(.+?)\s*\(([^)]*)\)\s*$/);
+    return m ? {name:m[1].trim(), strength:m[2].trim()} : {name:p.replace(/\s+/g,' ').trim(), strength:''};
+  }).filter(x=>x.name && x.name.length>1);
+}
+function subPriceDelta(cm){
+  if(!cm) return null;
+  if(/same\s+price/i.test(cm)) return 0;
+  const m=String(cm).match(/(\d+(?:\.\d+)?)\s*%\s*(cheaper|costlier|less|more|lower|higher)/i);
+  if(!m) return null;
+  const v=parseFloat(m[1]);
+  return /cheaper|less|lower/i.test(m[2]) ? -v : v;
+}
+const hubSlug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'x';
+const saltLink=(label,name)=>`<a href="/salt/${hubSlug(name)}">${esc(label)}</a>`;
+const mfrLink=(label,name)=>`<a href="/manufacturer/${hubSlug(name)}">${esc(label)}</a>`;
+const clink=(label,cls)=>`<a href="/class/${hubSlug(cls)}">${esc(label)}</a>`;
+const flink=(label,form)=>`<a href="/form/${hubSlug(form)}">${esc(label)}</a>`;
+
+function firstUseText(c){
+  let u=(Array.isArray(c.uses)?c.uses[0]:c.uses||'');
+  u=String(u).replace(/^[-•]\s*/,'').trim();
+  if(u.length>90) u=u.slice(0,90).replace(/\s+\S*$/,'')+'…';
+  return u.replace(/[.\s]+$/,'').toLowerCase();
+}
+function leadSummary(r){
+  const s=r.summary||{}, c=r.content||{};
+  const comps=saltComponents(s.salt_composition);
+  const rxAdj=r.prescription_required==='prescription'?'prescription-only':'over-the-counter';
+  const form=(s.dosage_form||'medicine').toLowerCase();
+  const plural=/(drops|granules|respules|flakes|crystals|sachets|wipes)$/i.test(form);
+  const ing=comps.length?comps.map(x=>x.name+(x.strength?' '+x.strength:'')).join(' and '):'';
+  const use=firstUseText(c);
+  let o=`<b>${esc(r.name)}</b> is ${plural?'':'a '}${rxAdj} ${esc(form)}`;
+  if(ing) o+=`. It ${comps.length>1?'combines':'contains'} ${esc(ing)}`;
+  if(use) o+=ing?`, and is used for ${esc(use)}`:`, used for ${esc(use)}`;
+  o+='.';
+  const bits=[];
+  if(s.marketer) bits.push(`marketed by ${mfrLink(s.marketer,s.marketer)}`);
+  if(s.therapeutic_class) bits.push(`grouped under ${clink(titleCase(s.therapeutic_class),s.therapeutic_class)}`);
+  if(bits.length) o+=` It is ${bits.join(' and ')}.`;
+  if(s.habit_forming && /^y/i.test(s.habit_forming)) o+=` <b>This medicine is habit-forming</b> and should be taken only for the period a doctor prescribes.`;
+  return `<p class="lead-sum">${o}</p>`;
+}
+function factTable(r){
+  const s=r.summary||{};
+  const comps=saltComponents(s.salt_composition);
+  const compCell=comps.length
+    ? comps.map(x=>`${saltLink(x.name,x.name)}${x.strength?` <span class="fx">${esc(x.strength)}</span>`:''}`).join(' + ')
+    : (s.salt_composition?esc(s.salt_composition):'');
+  const rows=[
+    ['Composition', compCell],
+    ['Type', r.prescription_required==='prescription'?'Prescription (℞) only':'Over-the-counter'],
+    ['Dosage form', s.dosage_form?flink(s.dosage_form,s.dosage_form):''],
+    ['Route', s.administration_route?esc(s.administration_route):''],
+    ['Therapeutic class', s.therapeutic_class?clink(titleCase(s.therapeutic_class),s.therapeutic_class):''],
+    ['Chemical class', s.chemical_class?esc(s.chemical_class):''],
+    ['Action class', s.action_class?esc(s.action_class):''],
+    ['Habit forming', s.habit_forming?esc(s.habit_forming):''],
+    ['Manufacturer', s.marketer?mfrLink(s.marketer,s.marketer):''],
+    ['Pack', s.pack_label?esc(s.pack_label):''],
+    ['Price (approx.)', s.price_selling!=null?esc(rupee(s.price_selling)):(s.price_mrp!=null?esc(rupee(s.price_mrp)):'')],
+    ['Storage', s.storage?esc(s.storage):''],
+    ['Country of origin', s.country_of_origin?esc(s.country_of_origin):''],
+  ].filter(x=>x[1]);
+  return `<table class="facts"><tbody>${rows.map(x=>`<tr><th>${esc(x[0])}</th><td>${x[1]}</td></tr>`).join('')}</tbody></table>`;
+}
+function compositionBlock(r){
+  const comps=saltComponents((r.summary||{}).salt_composition);
+  if(!comps.length) return '';
+  const kind=comps.length===1?'a single-ingredient medicine':comps.length===2?'a two-drug combination':`a ${comps.length}-drug combination`;
+  const items=comps.map(x=>`<li><b>${saltLink(x.name,x.name)}</b>${x.strength?` — ${esc(x.strength)}`:''}<div class="cnote">See every brand that contains ${esc(x.name)}.</div></li>`).join('');
+  return `<p>${esc(r.name)} is ${kind}.</p><ul class="comp">${items}</ul>`;
+}
+function substitutesBlock(r){
+  const subs=((r.content||{}).substitutes||[]).filter(x=>x.name).map(x=>({
+    name:x.name, by:(x.by||'').replace(/^by\s+/i,''), url:x.url,
+    slug:slugFromUrl(x.url), delta:subPriceDelta(x.composition_match)
+  }));
+  if(!subs.length) return '';
+  const priced=subs.filter(x=>typeof x.delta==='number').sort((a,b)=>a.delta-b.delta);
+  const cheaper=priced.filter(x=>x.delta<0);
+  let intro=`<p><b>${subs.length}</b> other brand${subs.length>1?'s share':' shares'} the exact composition of ${esc(r.name)}`;
+  if(cheaper.length){
+    const best=cheaper[0];
+    intro+=` &mdash; ${cheaper.length} cheaper, the lowest being <b>${esc(best.name)}</b> at roughly ${Math.abs(best.delta)}% less`;
+  }
+  intro+='. A pharmacist can dispense any of these in place of the original.</p>';
+  const ordered=priced.length?priced.concat(subs.filter(x=>typeof x.delta!=='number')):subs;
+  const list=ordered.map(x=>{
+    const href=x.slug?'/m/'+encodeURIComponent(x.slug):(x.url||'#');
+    let tag='';
+    if(typeof x.delta==='number') tag=x.delta<0?`<span class="cmp down">${Math.abs(x.delta)}% cheaper</span>`
+      :x.delta>0?`<span class="cmp up">${x.delta}% costlier</span>`:`<span class="cmp">same price</span>`;
+    return `<a class="sub" href="${esc(href)}" ${x.slug?'':'target="_blank" rel="noopener"'}><span>${esc(x.name)}${x.by?` <span class="by">${esc(x.by)}</span>`:''}</span>${tag}</a>`;
+  }).join('');
+  return intro+`<div class="subs">${list}</div>`;
+}
+function inxSummary(inx){
+  if(!inx.length) return '';
+  const has=re=>inx.filter(x=>re.test(x.severity||'')).length;
+  const serious=has(/life|severe|major/i), mod=has(/moderate/i), mild=has(/mild|minor/i);
+  const parts=[];
+  if(serious) parts.push(`${serious} serious`);
+  if(mod) parts.push(`${mod} moderate`);
+  if(mild) parts.push(`${mild} mild`);
+  return `<p class="ix-sum">Documented interactions with <b>${inx.length}</b> medicine${inx.length>1?'s or substances':''}${parts.length?` — ${parts.join(', ')}`:''}. Tell your doctor about everything you take before combining.</p>`;
+}
+function genFaqs(r){
+  const s=r.summary||{}, c=r.content||{}, nm=r.name, out=[];
+  out.push([`Is ${nm} a prescription medicine?`,
+    r.prescription_required==='prescription'
+      ? `Yes. ${nm} is a prescription-only (℞) medicine and should be taken only under a doctor's supervision.`
+      : `No. ${nm} is available over the counter, but still follow the label or a pharmacist's advice.`]);
+  const uses=(Array.isArray(c.uses)?c.uses:[c.uses]).filter(Boolean).map(x=>String(x).replace(/^[-•]\s*/,'').trim());
+  if(uses.length) out.push([`What is ${nm} used for?`,
+    `${nm} is used for ${uses.join(', ').toLowerCase()}. The manufacturer's full description is in the prescribing information section on this page.`]);
+  const comps=saltComponents(s.salt_composition);
+  if(comps.length) out.push([`What does ${nm} contain?`,
+    comps.length===1
+      ? `${nm} contains ${comps[0].name}${comps[0].strength?' '+comps[0].strength:''}.`
+      : `${nm} combines ${comps.map(x=>x.name+(x.strength?' '+x.strength:'')).join(' and ')}.`]);
+  const subs=(c.substitutes||[]).filter(x=>x.name);
+  if(subs.length) out.push([`What can be used instead of ${nm}?`,
+    `${subs.length} brand${subs.length>1?'s have':' has'} the same composition, including ${subs.slice(0,3).map(x=>x.name).join(', ')}. See the equivalent-brands section above for the full list and price differences.`]);
+  if(s.price_selling!=null||s.price_mrp!=null) out.push([`How much does ${nm} cost?`,
+    `The listed price is around ${rupee(s.price_selling!=null?s.price_selling:s.price_mrp)}${s.pack_label?` for ${s.pack_label}`:''}. Pharmacy prices vary and equivalent brands are often cheaper.`]);
+  if(s.marketer) out.push([`Who makes ${nm}?`, `${nm} is marketed by ${s.marketer}.`]);
+  if(s.habit_forming) out.push([`Is ${nm} habit-forming?`,
+    /^y/i.test(s.habit_forming)
+      ? `Yes. ${nm} has habit-forming potential and should be used only for as long as your doctor prescribes.`
+      : `No. ${nm} is not listed as habit-forming.`]);
+  if(s.storage) out.push([`How should ${nm} be stored?`, `${s.storage}. Keep it out of the reach of children.`]);
+  return out;
+}
+function relatedBlock(r){
+  const s=r.summary||{}, links=[];
+  saltComponents(s.salt_composition).forEach(x=>links.push([`All ${x.name} brands`, '/salt/'+hubSlug(x.name)]));
+  if(s.therapeutic_class) links.push([`More ${titleCase(s.therapeutic_class)}`, '/class/'+hubSlug(s.therapeutic_class)]);
+  if(s.marketer) links.push([`More from ${s.marketer}`, '/manufacturer/'+hubSlug(s.marketer)]);
+  if(s.dosage_form) links.push([`Other ${s.dosage_form.toLowerCase()} medicines`, '/form/'+hubSlug(s.dosage_form)]);
+  if(!links.length) return '';
+  return `<div class="rel">${links.map(([l,h])=>`<a href="${esc(h)}">${esc(l)} →</a>`).join('')}</div>`;
+}
+
 function detailHTML(r, slug){
   if(!r||r.error){
     return `<div class="notfound"><div style="font-size:30px">💊</div><h3 style="margin:8px 0 4px;color:var(--heading)">Not in the database yet</h3>
@@ -925,46 +1134,68 @@ function detailHTML(r, slug){
   const s=r.summary||{}, c=r.content||{};
   const img=(r.images&&r.images[0])?(r.images[0].medium||r.images[0].high||r.images[0].low):null;
   const rxTag=r.prescription_required==='prescription'?'<span class="tag rx">℞ Prescription</span>':'<span class="tag otc">Non-prescription</span>';
-  const kv=[['Composition',s.salt_composition],['Generic name',s.non_proprietary_name],['Dosage form',s.dosage_form],['Route',s.administration_route],['Pack',s.pack_label],['Marketer',s.marketer],['Therapeutic class',s.therapeutic_class],['Chemical class',s.chemical_class],['Action class',s.action_class],['Habit forming',s.habit_forming],['Storage',s.storage],['Country of origin',s.country_of_origin],['Expiry ≥',s.expires_after]]
-    .filter(x=>x[1]).map(x=>`<div><b>${esc(x[0])}:</b> ${esc(x[1])}</div>`).join('');
   const priceLine=s.price_selling!=null?`<div class="sub">${s.price_mrp&&s.price_mrp!=s.price_selling?`<s style="color:var(--faint)">${rupee(s.price_mrp)}</s> `:''}<b style="color:var(--text)">${rupee(s.price_selling)}</b>${s.pack_label?' · '+esc(s.pack_label):''}</div>`:'';
 
+  const nobr=t=>String(t||'').replace(/<br\s*\/?>/gi,' ').replace(/\s{2,}/g,' ').trim();
   const safety=(c.safety_advice||[]).filter(x=>x.text);
-  const safetyHtml=safety.length?`<div class="safety">${safety.map(x=>`<div class="s ${safetyClass(x.label)}"><div class="asp">${esc(x.aspect||'')}</div>${x.label?`<div class="lab">${esc(x.label)}</div>`:''}<div style="font-size:13px;margin-top:3px">${esc(x.text)}</div></div>`).join('')}</div>`:'';
+  const safetyHtml=safety.length?`<div class="safety">${safety.map(x=>`<div class="s ${safetyClass(x.label)}"><div class="asp">${esc(x.aspect||'')}</div>${x.label?`<div class="lab">${esc(x.label)}</div>`:''}<div style="font-size:13px;margin-top:3px">${esc(nobr(x.text))}</div></div>`).join('')}</div>`:'';
   const prec=(c.precautions||[]).filter(x=>x.answer);
-  const precHtml=prec.length?`<div class="safety">${prec.map(x=>`<div class="s" style="border-left-color:var(--accent)"><div class="asp">${esc(x.question||'')}</div><div style="font-size:13px;margin-top:3px">${esc(x.answer)}</div></div>`).join('')}</div>`:'';
-  const inx=(c.drug_interactions||[]).filter(x=>x.drug);
-  const inxHtml=inx.length?`<div class="inx">${inx.map(x=>`<div class="r"><span class="d">${esc(x.drug)}</span>${x.severity?`<span class="sev ${(x.severity||'').toLowerCase()}">${esc(x.severity)}</span>`:''}<div style="color:var(--muted);margin-top:3px">${esc(x.effect||'')}</div></div>`).join('')}</div>`:'';
+  const precHtml=prec.length?`<div class="safety">${prec.map(x=>`<div class="s" style="border-left-color:var(--accent)"><div class="asp">${esc(x.question||'')}</div><div style="font-size:13px;margin-top:3px">${esc(nobr(x.answer))}</div></div>`).join('')}</div>`:'';
+  const sevClass=v=>{ const l=(v||'').toLowerCase(); if(/life|severe|major/.test(l))return 'severe'; if(/moder/.test(l))return 'moderate'; if(/mild|minor/.test(l))return 'mild'; return ''; };
+  const _ix=new Set();
+  const inx=(c.drug_interactions||[]).filter(x=>x.drug).filter(x=>{ const k=(x.drug+'|'+(x.effect||'')).toLowerCase(); if(_ix.has(k))return false; _ix.add(k); return true; });
+  const inxHtml=inx.length?`<div class="inx">${inx.map(x=>`<div class="r"><span class="d">${esc(x.drug)}</span>${x.severity?`<span class="sev ${sevClass(x.severity)}">${esc(x.severity)}</span>`:''}<div style="color:var(--muted);margin-top:3px">${esc(nobr(x.effect))}</div></div>`).join('')}</div>`:'';
   const subs=(c.substitutes||[]).filter(x=>x.name);
-  const subsHtml=subs.length?`<div class="subs">${subs.map(x=>{ const sl=slugFromUrl(x.url); const href=sl?'/m/'+encodeURIComponent(sl):(x.url||'#');
-      return `<a class="sub" href="${esc(href)}" ${sl?'':'target="_blank" rel="noopener"'}><span>${esc(x.name)} <span style="color:var(--muted)">${esc(x.by||'')}</span></span>${x.composition_match?`<span class="cmp">${esc(x.composition_match)}</span>`:''}</a>`;}).join('')}</div>`:'';
   const faqs=(c.faqs||[]).filter(x=>x.question);
-  const faqHtml=faqs.length?`<div class="faqlist">${faqs.map((x,i)=>`<details class="faq"${i===0?' open':''}><summary><span class="q">${esc(x.question)}</span><span class="ic" aria-hidden="true"></span></summary><div class="a">${esc(x.answer||'')}</div></details>`).join('')}</div>`:'';
   const refs=(c.references||[]).filter(x=>x.text);
   const refHtml=refs.length?`<ul class="clean" style="font-size:12px;color:var(--muted)">${refs.map(x=>`<li>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.text)}</a>`:esc(x.text)}</li>`).join('')}</ul>`:'';
+
+  const gfaqs=genFaqs(r);
+  const gfaqHtml=gfaqs.length?`<div class="faqlist">${gfaqs.map(([q,a],i)=>`<details class="faq"${i===0?' open':''}><summary><span class="q">${esc(q)}</span><span class="ic" aria-hidden="true"></span></summary><div class="a">${esc(a)}</div></details>`).join('')}</div>`:'';
+
+  // ---- demoted: text reproduced from the manufacturer's product information ----
+  const labelBlocks=[
+    ['Introduction',proseOrList(c.introduction)],
+    ['Uses',proseOrList(c.uses)],
+    ['Symptoms it helps',proseOrList(c.symptoms)],
+    ['Key ingredients',proseOrList(c.key_ingredients)],
+    ['Benefits',proseOrList(c.benefits)],
+    ['How it works',proseOrList(c.how_it_works)],
+    ['How to use',proseOrList(c.how_to_use)],
+    ['Dosage',proseOrList(c.dosage)],
+    ['Side effects',proseOrList(c.side_effects)],
+    ['Quick tips',proseOrList(c.quick_tips)],
+  ].filter(x=>x[1]);
+  const scrapedFaqHtml=faqs.length?`<div class="faqlist">${faqs.map(x=>`<details class="faq"><summary><span class="q">${esc(x.question)}</span><span class="ic" aria-hidden="true"></span></summary><div class="a">${esc(x.answer||'')}</div></details>`).join('')}</div>`:'';
+  const labelHtml=(labelBlocks.length||scrapedFaqHtml)?`<section class="blk label-info" id="s-label" data-toc="Prescribing information">
+      <h4>From the prescribing information</h4>
+      <details class="li-wrap">
+        <summary>Show the manufacturer's full product information</summary>
+        <p class="li-note">Reproduced from the manufacturer's product information. OpenMedsDB's own summary and analysis are above.</p>
+        ${labelBlocks.map(([t,h])=>`<div class="li-b"><h5>${esc(t)}</h5>${h}</div>`).join('')}
+        ${scrapedFaqHtml?`<div class="li-b"><h5>Manufacturer's FAQ</h5>${scrapedFaqHtml}</div>`:''}
+      </details>
+    </section>`:'';
+
+  const checked=r.scraped_at?new Date(r.scraped_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
 
   return `<div class="hero"><div class="thumb">${img?`<img src="${esc(img)}" alt="">`:'💊'}</div>
       <div style="min-width:0"><h2>${esc(r.name)}</h2><div class="sub">${esc(s.salt_composition||'')}</div>${priceLine}
         <div class="tags" style="margin-top:8px">${rxTag}${s.therapeutic_class?`<span class="tag klass">${esc(s.therapeutic_class)}</span>`:''}
           ${inx.length?`<a class="tag klass" href="/interactions?s=${encodeURIComponent(r.slug)}" title="Check interactions">⇄ Check interactions</a>`:''}</div></div></div>
+    ${leadSummary(r)}
     ${r.classification&&r.classification.length?`<div class="crumb">${r.classification.map(esc).join(' › ')}</div>`:''}
-    <div class="kv">${kv}</div>
-    ${blk('intro','Introduction',proseOrList(c.introduction))}
-    ${blk('uses','Uses',proseOrList(c.uses))}
-    ${blk('symptoms','Symptoms it helps',proseOrList(c.symptoms))}
-    ${blk('ingredients','Key ingredients',proseOrList(c.key_ingredients))}
-    ${blk('benefits','Benefits',proseOrList(c.benefits))}
-    ${blk('how','How it works',proseOrList(c.how_it_works))}
-    ${blk('use','How to use',proseOrList(c.how_to_use))}
-    ${blk('dosage','Dosage',proseOrList(c.dosage))}
-    ${blk('side','Side effects',proseOrList(c.side_effects))}
+    ${blk('facts','Key facts',factTable(r))}
+    ${saltComponents(s.salt_composition).length>1?blk('composition','Composition breakdown',compositionBlock(r)):''}
+    ${blk('alts','Equivalent & cheaper brands',substitutesBlock(r),subs.length)}
+    ${blk('inx','Drug interactions',inxSummary(inx)+inxHtml,inx.length)}
     ${blk('safety','Safety advice',safetyHtml,safety.length)}
     ${blk('prec','Precautions',precHtml,prec.length)}
-    ${blk('inx','Drug interactions',inxHtml,inx.length)}
-    ${blk('tips','Quick tips',proseOrList(c.quick_tips))}
-    ${blk('subs','Substitutes',subsHtml,subs.length)}
-    ${blk('faq','FAQs',faqHtml,faqs.length)}
-    ${blk('refs','References',refHtml)}`;
+    ${blk('faq','Frequently asked questions',gfaqHtml,gfaqs.length)}
+    ${blk('related','Related',relatedBlock(r))}
+    ${labelHtml}
+    ${blk('refs','References',refHtml)}
+    <p class="prov">Compiled from publicly available drug information and product labelling; structured data, summary and analysis by OpenMedsDB.${checked?` Last checked ${esc(checked)}.`:''} This page is an informational reference, not medical advice.</p>`;
 }
 
 /* =============== drawer =============== */
@@ -994,9 +1225,13 @@ async function showDrugPage(slug){
   }else{
     const s=r.summary||{}, c=r.content||{};
     const title=`${r.name}${s.salt_composition?' ('+s.salt_composition+')':''} — uses, side effects, dosage · OpenMedsDB`;
-    const lead=((Array.isArray(c.introduction)?c.introduction.join(' '):c.introduction)||'')
-      .replace(/^[A-Za-z][A-Za-z ]{0,24}:\s*/,'').split(/(?<=\.)\s/)[0];
-    const desc=`${r.name}${s.salt_composition?' contains '+s.salt_composition+'. ':' — '}${lead||'Uses, benefits, side effects, dosage, drug interactions and substitute brands.'}`;
+    const _comps=saltComponents(s.salt_composition);
+    const _nSub=(c.substitutes||[]).length, _use=firstUseText(c);
+    const desc=(`${r.name}${_comps.length?' — '+_comps.map(x=>x.name+(x.strength?' ('+x.strength+')':'')).join(' + '):''}. `
+      +`${r.prescription_required==='prescription'?'Prescription':'OTC'} ${(s.dosage_form||'medicine').toLowerCase()}`
+      +`${s.marketer?' from '+s.marketer:''}${_use?', used for '+_use:''}. `
+      +`Composition, uses, side effects, dosage, drug interactions`
+      +`${_nSub?` and ${_nSub} equivalent brand${_nSub>1?'s':''}`:''}.`);
     const drug={"@type":"Drug","name":r.name};
     if(s.salt_composition) drug.activeIngredient=s.salt_composition;
     if(s.non_proprietary_name) drug.nonProprietaryName=s.non_proprietary_name;
@@ -1011,10 +1246,10 @@ async function showDrugPage(slug){
       "url":canon,"description":desc,"inLanguage":"en-IN",
       "isPartOf":{"@type":"WebSite","name":"OpenMedsDB","url":ORIGIN+"/"},
       "about":drug};
-    const faqs=(c.faqs||[]).filter(f=>f.question&&f.answer);
-    const ld = faqs.length ? [page,{"@context":"https://schema.org","@type":"FAQPage",
-      "mainEntity":faqs.slice(0,12).map(f=>({"@type":"Question","name":f.question,
-        "acceptedAnswer":{"@type":"Answer","text":f.answer}}))}] : page;
+    const gf=genFaqs(r);
+    const ld = gf.length ? [page,{"@context":"https://schema.org","@type":"FAQPage",
+      "mainEntity":gf.slice(0,10).map(([q,a])=>({"@type":"Question","name":q,
+        "acceptedAnswer":{"@type":"Answer","text":a}}))}] : page;
     setMeta(title, desc, canon, ld);
   }
   $('#pagebody').innerHTML=detailHTML(r,slug);
@@ -1044,6 +1279,80 @@ function buildToc(){
   secs.forEach(s=>io.observe(s));
 }
 $('#sharebtn').onclick=async()=>{ try{ await navigator.clipboard.writeText(location.href); $('#sharebtn').textContent='Link copied ✓'; setTimeout(()=>$('#sharebtn').textContent='Copy link',1500);}catch(e){prompt('Copy this link:',location.href);} };
+
+/* =============== hub pages (/salt /class /manufacturer /form) =============== */
+const HUB_KIND={salt:'salt',class:'class',manufacturer:'mfr',form:'form'};
+const HUB_META={
+  salt:{noun:'ingredient', crumb:'Ingredients'},
+  class:{noun:'therapeutic class', crumb:'Therapeutic classes'},
+  mfr:{noun:'manufacturer', crumb:'Manufacturers'},
+  form:{noun:'dosage form', crumb:'Dosage forms'}
+};
+function hubCopy(kind,v,n){
+  const N=n.toLocaleString();
+  if(kind==='salt') return {
+    title:`${v} — brands, uses & price comparison · OpenMedsDB`,
+    h1:`${v}: ${N} brand${n===1?'':'s'} in India`,
+    intro:`${v} is an active pharmaceutical ingredient found in ${N} medicine${n===1?'':'s'} listed on OpenMedsDB. Every brand below has the same active ingredient — compare composition, prescription status and price, and open any one for its uses, side effects, dosage and interactions.`,
+    desc:`Every medicine containing ${v} — ${N} brands compared by composition, prescription status and price. Uses, side effects, dosage and substitutes for each.`};
+  if(kind==='class') return {
+    title:`${v} medicines — full list · OpenMedsDB`,
+    h1:`${v} medicines (${N})`,
+    intro:`The ${v} therapeutic class covers ${N} medicine${n===1?'':'s'} on OpenMedsDB. Browse the full list below, or open any medicine for its composition, uses, side effects, dosage and drug interactions.`,
+    desc:`Full list of ${N} ${v} medicines available in India, with composition, prescription status, price and substitutes for each.`};
+  if(kind==='mfr') return {
+    title:`${v} — medicines & products · OpenMedsDB`,
+    h1:`${v}: ${N} medicine${n===1?'':'s'}`,
+    intro:`${v} markets ${N} medicine${n===1?'':'s'} listed on OpenMedsDB. Browse their full range below — each entry links to composition, uses, side effects, dosage and interactions.`,
+    desc:`All ${N} medicines marketed by ${v}, with composition, prescription status, price and equivalent brands for each.`};
+  return {
+    title:`Medicines available as ${v.toLowerCase()} — full list · OpenMedsDB`,
+    h1:`Medicines available as ${v.toLowerCase()} (${N})`,
+    intro:`${N} medicine${n===1?'':'s'} on OpenMedsDB come as ${v.toLowerCase()}. Browse the full list below, or open any one for its composition, uses, side effects and dosage.`,
+    desc:`Full list of ${N} medicines available as ${v.toLowerCase()} in India, with composition, prescription status and price for each.`};
+}
+async function showHub(urlKind, slug){
+  const kind=HUB_KIND[urlKind]; if(!kind){ show('browse'); route(); return; }
+  slug=hubSlug(slug);
+  state.q='';   // card() highlights against state.q; hub lists are unfiltered
+  show('hub'); window.scrollTo(0,0);
+  const canon=ORIGIN+'/'+urlKind+'/'+slug;
+  $('#hub-title').textContent='Loading…'; $('#hub-intro').textContent=''; $('#hub-count').textContent='';
+  $('#hub-foot').innerHTML=''; $('#hub-results').innerHTML=`<div class="grid">${'<div class="skel"></div>'.repeat(6)}</div>`;
+  const data=await getJSON('hub/'+kind+'/'+slug.slice(0,2)+'/'+slug+'.json');
+  if(!data||!data.items){
+    $('#hub-title').textContent='Page not found';
+    $('#hub-crumb').innerHTML=`<a href="/">Home</a> › <span>Not found</span>`;
+    $('#hub-results').innerHTML=`<div class="empty">No ${esc(HUB_META[kind].noun)} page for “${esc(slug)}”. It may not be in the database yet.</div>`;
+    setMeta('Page not found · OpenMedsDB', DEFAULT_DESC, canon);
+    return;
+  }
+  const v = kind==='class' ? titleCase(data.v) : data.v;
+  const n = data.n, shown = data.items.length;
+  const cp = hubCopy(kind, v, n);
+  $('#hub-crumb').innerHTML=`<a href="/">Home</a> › <span>${esc(HUB_META[kind].crumb)}</span> › <span>${esc(v)}</span>`;
+  $('#hub-title').textContent=cp.h1;
+  $('#hub-intro').textContent=cp.intro;
+  $('#hub-count').textContent = shown<n ? `Showing ${shown.toLocaleString()} of ${n.toLocaleString()}` : `${n.toLocaleString()} medicine${n===1?'':'s'}`;
+  $('#hub-results').innerHTML=`<div class="grid">${data.items.map(card).join('')}</div>`;
+  $$('#hub-results [data-slug]').forEach(el=>el.onclick=()=>nav('/m/'+encodeURIComponent(el.dataset.slug)));
+  if(shown<n){
+    const browseHref = kind==='class' ? '/?cls='+encodeURIComponent(data.v)
+      : kind==='form' ? '/?form='+encodeURIComponent(data.v)
+      : '/?q='+encodeURIComponent(data.v);
+    $('#hub-foot').innerHTML=`<a href="${esc(browseHref)}">See all ${n.toLocaleString()} in full browse →</a>`;
+  }
+  const itemList={"@context":"https://schema.org","@type":"ItemList","name":cp.h1,
+    "numberOfItems":n,
+    "itemListElement":data.items.slice(0,60).map((m,i)=>({"@type":"ListItem","position":i+1,
+      "url":ORIGIN+'/m/'+encodeURIComponent(m.slug),"name":m.medicine}))};
+  const crumbs={"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Home","item":ORIGIN+'/'},
+    {"@type":"ListItem","position":2,"name":v,"item":canon}]};
+  setMeta(cp.title, cp.desc, canon, [
+    {"@context":"https://schema.org","@type":"CollectionPage","name":cp.h1,"url":canon,"description":cp.desc},
+    itemList, crumbs]);
+}
 
 /* =============== interactions =============== */
 let inxSlugs=[];
@@ -1091,7 +1400,7 @@ $$('.viewtog button').forEach(b=>{ b.classList.toggle('on',b.dataset.v===state.v
 $('#clsq').oninput=e=>{clsFilter=e.target.value.trim().toLowerCase(); clsShowAll=!!clsFilter; if(lastFacets) renderFacets(lastFacets);};
 $('#sidetog').onclick=()=>$('#side').classList.add('open'); $('#closeside').onclick=()=>$('#side').classList.remove('open');
 
-function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about';
+function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about'; $('#hub').hidden=v!=='hub';
   $$('.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.nav===(v==='page'?'':v))); }
 
 /* =============== SEO metadata =============== */
@@ -1119,6 +1428,8 @@ function route(){
   closeDrawer();
   const path=decodeURIComponent(location.pathname), qs=location.search.replace(/^\?/,'');
   if(path.startsWith('/m/')){ showDrugPage(path.slice(3)); return; }
+  const hubM=path.match(/^\/(salt|class|manufacturer|form)\/([^/]+)\/?$/);
+  if(hubM){ showHub(hubM[1], decodeURIComponent(hubM[2])); return; }
   if(path==='/interactions'){ showInx(qs); return; }
   if(path==='/about'){
     show('about'); window.scrollTo(0,0);
