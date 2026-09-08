@@ -997,18 +997,24 @@ async function showDrugPage(slug){
     const lead=((Array.isArray(c.introduction)?c.introduction.join(' '):c.introduction)||'')
       .replace(/^[A-Za-z][A-Za-z ]{0,24}:\s*/,'').split(/(?<=\.)\s/)[0];
     const desc=`${r.name}${s.salt_composition?' contains '+s.salt_composition+'. ':' — '}${lead||'Uses, benefits, side effects, dosage, drug interactions and substitute brands.'}`;
-    const drug={"@context":"https://schema.org","@type":"Drug","name":r.name,"url":canon,"description":desc};
+    const drug={"@type":"Drug","name":r.name};
     if(s.salt_composition) drug.activeIngredient=s.salt_composition;
     if(s.non_proprietary_name) drug.nonProprietaryName=s.non_proprietary_name;
     if(s.dosage_form) drug.dosageForm=s.dosage_form;
     if(s.administration_route) drug.administrationRoute=s.administration_route;
+    if(s.therapeutic_class) drug.drugClass={"@type":"DrugClass","name":s.therapeutic_class};
     if(s.marketer) drug.manufacturer={"@type":"Organization","name":s.marketer};
     drug.prescriptionStatus = r.prescription_required==='prescription'
       ? "https://schema.org/PrescriptionOnly" : "https://schema.org/OTC";
+    // MedicalWebPage (not a bare Drug) so Google doesn't validate it as a shopping Product
+    const page={"@context":"https://schema.org","@type":"MedicalWebPage","name":title,
+      "url":canon,"description":desc,"inLanguage":"en-IN",
+      "isPartOf":{"@type":"WebSite","name":"OpenMedsDB","url":ORIGIN+"/"},
+      "about":drug};
     const faqs=(c.faqs||[]).filter(f=>f.question&&f.answer);
-    const ld = faqs.length ? [drug,{"@context":"https://schema.org","@type":"FAQPage",
+    const ld = faqs.length ? [page,{"@context":"https://schema.org","@type":"FAQPage",
       "mainEntity":faqs.slice(0,12).map(f=>({"@type":"Question","name":f.question,
-        "acceptedAnswer":{"@type":"Answer","text":f.answer}}))}] : drug;
+        "acceptedAnswer":{"@type":"Answer","text":f.answer}}))}] : page;
     setMeta(title, desc, canon, ld);
   }
   $('#pagebody').innerHTML=detailHTML(r,slug);
