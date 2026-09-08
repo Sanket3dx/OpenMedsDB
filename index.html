@@ -31,14 +31,21 @@
 <!-- Google Analytics (GA4) -->
 <script>
   window.GA_ID = "G-CXRHHW0WG4";
-  if (GA_ID && GA_ID.indexOf("XXXX") === -1) {
+  // visitor opt-out (set from the Privacy Policy page) fully disables GA before it loads
+  try { if (localStorage.getItem("noanalytics") === "1") window["ga-disable-" + GA_ID] = true; } catch (e) {}
+  if (GA_ID && GA_ID.indexOf("XXXX") === -1 && !window["ga-disable-" + GA_ID]) {
     var s = document.createElement("script"); s.async = true;
     s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
     document.head.appendChild(s);
     window.dataLayer = window.dataLayer || [];
     window.gtag = function(){ dataLayer.push(arguments); };
     gtag("js", new Date());
-    gtag("config", GA_ID, { send_page_view: false });  // SPA: page_view sent manually per route
+    gtag("config", GA_ID, {
+      send_page_view: false,            // SPA: page_view sent manually per route
+      anonymize_ip: true,
+      allow_google_signals: false,      // no cross-device / demographics
+      allow_ad_personalization_signals: false
+    });
   } else {
     window.gtag = function(){};
   }
@@ -346,9 +353,18 @@
 
   /* ---------- footer ---------- */
   .sitefoot{border-top:1px solid var(--border);background:var(--panel);margin-top:auto}
-  .sitefoot .in{width:100%;padding:16px 26px;color:var(--muted);font-size:12.5px;display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .sitefoot .in{width:100%;padding:16px 26px;color:var(--muted);font-size:12.5px;display:flex;gap:14px 18px;flex-wrap:wrap;align-items:center}
   .sitefoot b{color:var(--heading)}
-  .sitefoot .disc{color:var(--faint)}
+  .sitefoot .disc{color:var(--faint);flex-basis:100%}
+  .footlinks{display:flex;gap:14px;flex-wrap:wrap}
+  .footlinks a{color:var(--muted)} .footlinks a:hover{color:var(--accent)}
+
+  /* ---------- cookie notice ---------- */
+  .cookiebar{position:fixed;left:12px;right:12px;bottom:12px;z-index:60;max-width:720px;margin:0 auto;
+    background:var(--panel);border:1px solid var(--border-strong);border-radius:10px;box-shadow:var(--sh-lg);
+    padding:12px 14px;display:flex;gap:12px;align-items:center;font-size:12.5px;color:var(--muted)}
+  .cookiebar a{font-weight:600}
+  .cookiebar button{flex:none}
 
   /* ---------- landing ---------- */
   .lp{max-width:1060px}
@@ -392,7 +408,7 @@
   .chiprow{display:flex;gap:8px;flex-wrap:wrap}
 
   @media print{
-    header,.sitefoot,.topline,.toc,.drawer,.scrim,#browse,#inx{display:none!important}
+    header,.sitefoot,.topline,.toc,.drawer,.scrim,.cookiebar,#browse,#inx{display:none!important}
     body{background:#fff}
     .pwrap{padding:0;max-width:none} .pgrid{display:block} .pcard{border:0;padding:0}
     .detail details.faq{break-inside:avoid;border-color:#ccc} .detail details.faq summary .ic{display:none}
@@ -534,25 +550,41 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
           github.com/Sanket3dx
         </a>
+        <a href="https://www.linkedin.com/in/sanket-patil3dx/" target="_blank" rel="noopener">LinkedIn ↗</a>
         <a href="https://sanket3dx.github.io/" target="_blank" rel="noopener">Website ↗</a>
       </div>
+      <p style="margin-top:14px">Questions, corrections or privacy requests? See the <a href="/contact">Contact</a> page.</p>
     </section>
 
     <section>
       <h2>Disclaimer</h2>
-      <p>OpenMedsDB is an informational reference only and is not a substitute for professional medical advice, diagnosis or treatment. Data may be incomplete or out of date. Always consult a qualified doctor or pharmacist before taking, combining or stopping any medication.</p>
+      <p>OpenMedsDB is an informational reference only and is not a substitute for professional medical advice, diagnosis or treatment. Data may be incomplete or out of date. Always consult a qualified doctor or pharmacist before taking, combining or stopping any medication. See the full <a href="/disclaimer">medical disclaimer</a>.</p>
     </section>
   </div>
 </section>
 
+<!-- ================= LEGAL / DOC PAGES ================= -->
+<section id="doc" hidden><div class="about" id="doc-body"></div></section>
+
 <footer class="sitefoot">
   <div class="in">
     <span>Compiled &amp; maintained by <b>Sanket Patil</b></span>
-    <span><a href="/about">About</a></span>
-    <span><a href="https://github.com/Sanket3dx/" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footlinks">
+      <a href="/about">About</a>
+      <a href="/disclaimer">Medical disclaimer</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/contact">Contact</a>
+      <a href="https://github.com/Sanket3dx/" target="_blank" rel="noopener">GitHub</a>
+    </nav>
     <span class="disc">Informational reference only — not medical advice. Always consult a doctor or pharmacist.</span>
   </div>
 </footer>
+
+<div class="cookiebar" id="cookiebar" hidden>
+  <span>OpenMedsDB uses cookies only for anonymous usage analytics. See the <a href="/privacy">Privacy Policy</a>.</span>
+  <button id="cookieok" class="ghostbtn">Got it</button>
+</div>
 
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-hidden="true">
@@ -1400,7 +1432,7 @@ $$('.viewtog button').forEach(b=>{ b.classList.toggle('on',b.dataset.v===state.v
 $('#clsq').oninput=e=>{clsFilter=e.target.value.trim().toLowerCase(); clsShowAll=!!clsFilter; if(lastFacets) renderFacets(lastFacets);};
 $('#sidetog').onclick=()=>$('#side').classList.add('open'); $('#closeside').onclick=()=>$('#side').classList.remove('open');
 
-function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about'; $('#hub').hidden=v!=='hub';
+function show(v){ view=v; $('#browse').hidden=v!=='browse'; $('#page').hidden=v!=='page'; $('#inx').hidden=v!=='inx'; $('#about').hidden=v!=='about'; $('#hub').hidden=v!=='hub'; $('#doc').hidden=v!=='doc';
   $$('.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.nav===(v==='page'?'':v))); }
 
 /* =============== SEO metadata =============== */
@@ -1419,6 +1451,129 @@ function setMeta(title, desc, canonical, jsonld){
   if(window.gtag) gtag('event','page_view',{page_title:title, page_location:canonical});
 }
 
+/* =============== legal / info pages =============== */
+const LI='https://www.linkedin.com/in/sanket-patil3dx/';
+const GH_REPO='https://github.com/Sanket3dx/OpenMedsDB';
+const DS='https://huggingface.co/datasets/sanket3dx/medicine_db';
+const UPDATED='September 2026';
+
+const DOCS={
+  disclaimer:{
+    title:'Medical disclaimer',
+    desc:'OpenMedsDB is an informational reference only and is not a substitute for professional medical advice, diagnosis or treatment.',
+    html:`<h1>Medical disclaimer</h1>
+      <p class="lead">OpenMedsDB is an informational and educational reference. It is not medical advice and must not be used to diagnose, treat, or make decisions about any health condition or medication.</p>
+      <section><h2>Not a substitute for professional care</h2>
+        <p>Nothing on this site replaces consultation with a qualified doctor, pharmacist, or other healthcare professional. Always seek their advice before starting, stopping, combining, or changing the dose of any medicine. Do not disregard or delay professional advice because of something you read here.</p>
+        <p>Using this site does not create a doctor–patient or any other professional relationship between you and the operator.</p></section>
+      <section><h2>Accuracy and completeness</h2>
+        <p>The medicine information is compiled from publicly available sources and is provided “as is”. It may be incomplete, outdated, or contain errors. Drug formulations, approved uses, dosing, warnings, prices, and availability change over time and vary by country and by patient. The site does not list every brand, use, side effect, precaution, or interaction for any medicine.</p></section>
+      <section><h2>The interaction checker</h2>
+        <p>The drug interaction checker is a screening aid. It matches each medicine’s documented interactions in our dataset against the active ingredients of the other medicines you add. A result that shows no interaction does <b>not</b> mean a combination is safe — it only means none is recorded in our data. Always confirm with a pharmacist or doctor.</p></section>
+      <section><h2>No endorsement</h2>
+        <p>Listing a brand, manufacturer, or substitute is not a recommendation or endorsement of any product.</p></section>
+      <section><h2>Emergencies</h2>
+        <p>In a medical emergency, or if you suspect an overdose or a serious adverse reaction, contact your local emergency services or a doctor immediately. Do not rely on this website.</p></section>
+      <section><h2>Liability</h2>
+        <p>To the maximum extent permitted by law, the operator accepts no liability for any loss, injury, or damage arising from use of, or reliance on, this website. See the <a href="/terms">Terms of Use</a>.</p></section>
+      <p style="color:var(--faint);font-size:12.5px;margin-top:24px">Last updated: ${UPDATED}</p>`
+  },
+  privacy:{
+    title:'Privacy Policy',
+    desc:'How OpenMedsDB handles data: no accounts, no personal data collected directly, only anonymous analytics.',
+    html:`<h1>Privacy Policy</h1>
+      <p class="lead">OpenMedsDB is a free, static website operated by an individual, <b>Sanket Patil</b> (India). It has no user accounts and does not ask for or collect personal information directly. This page explains the limited data that is processed when you visit.</p>
+      <section><h2>What is processed</h2>
+        <ul>
+          <li><b>Anonymous analytics.</b> The site uses Google Analytics 4 (provided by Google LLC) to understand aggregate usage — pages viewed, approximate location (country/city, from a truncated IP), device and browser type, and the referring site. IP anonymization is enabled, and Google Signals and advertising personalization are turned off. This data is not used to identify you.</li>
+          <li><b>On-device storage.</b> Your browser stores a few small values locally — your recently viewed medicines, your last view preference, and whether you dismissed the cookie notice. These never leave your device and are not sent to any server.</li>
+          <li><b>Hosting logs.</b> The site is served by Cloudflare Pages (Cloudflare, Inc.), which may process standard request data (IP address, user agent, timestamp) transiently for security, abuse prevention, and performance.</li>
+          <li><b>Data files.</b> Medicine data is fetched by your browser directly from a public dataset hosted on Hugging Face (Hugging Face, Inc.). Those requests reach Hugging Face’s servers and are subject to their privacy practices.</li>
+        </ul></section>
+      <section><h2>Cookies</h2>
+        <p>The only cookies set are Google Analytics cookies (<code>_ga</code> and <code>_ga_&lt;id&gt;</code>), used to distinguish anonymous sessions. No advertising or cross-site tracking cookies are used.</p></section>
+      <section><h2>What is never done</h2>
+        <p>No selling or renting of data. No advertising. No tracking you across other websites. No profiling. No collection of health information you look up — searches and page views are not linked to any identity.</p></section>
+      <section><h2>Opt out of analytics</h2>
+        <p>You can disable analytics for this site entirely — it takes effect immediately and is remembered on this device:
+          <button id="doc-optout" class="ghostbtn" style="margin-left:8px">Disable analytics</button>
+          <span id="doc-optout-state" style="margin-left:8px;color:var(--otc);font-weight:600"></span></p>
+        <p>You can also use browser settings or Google’s <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Analytics opt-out add-on</a>.</p></section>
+      <section><h2>Legal basis and your rights</h2>
+        <p>Analytics is processed on the basis of legitimate interest in operating and improving a free public service. Because no identifiable personal data is stored, most data-subject requests (access, correction, deletion, objection) have nothing to act on; for anything related to analytics data held by Google, use Google’s controls or contact the operator. Under India’s Digital Personal Data Protection Act, 2023, the GDPR, and similar laws, you may raise a query or grievance via the <a href="/contact">Contact</a> page.</p></section>
+      <section><h2>International processing</h2>
+        <p>Google, Cloudflare, and Hugging Face are US-based; data they process may be handled outside India.</p></section>
+      <section><h2>Children</h2>
+        <p>The site is not directed at children under 18 and does not knowingly collect any information from them.</p></section>
+      <section><h2>Changes</h2>
+        <p>This policy may be updated; material changes will be reflected here with a new date below.</p></section>
+      <p style="color:var(--faint);font-size:12.5px;margin-top:24px">Last updated: ${UPDATED} · Contact: <a href="/contact">Contact page</a></p>`
+  },
+  terms:{
+    title:'Terms of Use',
+    desc:'Terms governing use of OpenMedsDB — a free informational medicine reference provided as is, with no warranty.',
+    html:`<h1>Terms of Use</h1>
+      <p class="lead">By accessing or using OpenMedsDB (the “site”) you agree to these terms. If you do not agree, do not use the site.</p>
+      <section><h2>What the site is</h2>
+        <p>The site is a free, non-commercial informational reference for medicines. It is operated by an individual, <b>Sanket Patil</b>. It is not medical advice and creates no professional relationship — see the <a href="/disclaimer">Medical disclaimer</a>.</p></section>
+      <section><h2>No warranty</h2>
+        <p>The site and all information on it are provided “as is” and “as available”, without warranties of any kind, express or implied, including as to accuracy, completeness, currency, reliability, or fitness for a particular purpose. Content is compiled from publicly available sources and may contain errors or omissions.</p></section>
+      <section><h2>Limitation of liability</h2>
+        <p>To the maximum extent permitted by applicable law, the operator shall not be liable for any direct, indirect, incidental, consequential, or other loss, injury, or damage arising from your use of, or inability to use, the site, or from any reliance on its content.</p></section>
+      <section><h2>Acceptable use</h2>
+        <p>Do not use the site to break the law, to harm others, to misrepresent its information as professional advice, or to place automated load on it that disrupts service for others. The underlying medicine data is available as an <a href="${DS}" target="_blank" rel="noopener">open dataset</a> — use that for bulk or programmatic access.</p></section>
+      <section><h2>Intellectual property</h2>
+        <p>The site’s source code is open source under the MIT License (<a href="${GH_REPO}" target="_blank" rel="noopener">repository</a>). The medicine dataset is published under the license stated on its <a href="${DS}" target="_blank" rel="noopener">dataset page</a>. Brand names, trademarks, and product names belong to their respective owners and are used for identification only. The “OpenMedsDB” name is the operator’s.</p></section>
+      <section><h2>Third-party links</h2>
+        <p>The site may link to external websites. The operator is not responsible for their content or practices.</p></section>
+      <section><h2>Changes</h2>
+        <p>The site, its features, and these terms may be changed or discontinued at any time without notice.</p></section>
+      <section><h2>Governing law</h2>
+        <p>These terms are governed by the laws of India. The courts at Pune, Maharashtra, India shall have exclusive jurisdiction, subject to any non-waivable rights you have under the law of your place of residence.</p></section>
+      <p style="color:var(--faint);font-size:12.5px;margin-top:24px">Last updated: ${UPDATED}</p>`
+  },
+  contact:{
+    title:'Contact',
+    desc:'How to reach the operator of OpenMedsDB for questions, data corrections, or privacy requests.',
+    html:`<h1>Contact</h1>
+      <p class="lead">OpenMedsDB is a personal project. The best way to get in touch is LinkedIn. Replies may take time.</p>
+      <section><h2>General enquiries</h2>
+        <p><a href="${LI}" target="_blank" rel="noopener">Sanket Patil on LinkedIn</a></p></section>
+      <section><h2>Data corrections</h2>
+        <p>Found something wrong or outdated on a medicine page? Please open an issue on the <a href="${GH_REPO}/issues" target="_blank" rel="noopener">GitHub repository</a> with the medicine name and what’s incorrect, or send it via LinkedIn.</p></section>
+      <section><h2>Privacy requests</h2>
+        <p>For any query or grievance under the Digital Personal Data Protection Act, 2023, the GDPR, or similar laws — see the <a href="/privacy">Privacy Policy</a> first, then reach out via <a href="${LI}" target="_blank" rel="noopener">LinkedIn</a>.</p></section>
+      <p style="color:var(--faint);font-size:12.5px;margin-top:24px">Last updated: ${UPDATED}</p>`
+  }
+};
+
+function showDoc(key){
+  const d=DOCS[key]; if(!d){ nav('/',true); return; }
+  show('doc'); window.scrollTo(0,0);
+  $('#doc-body').innerHTML=d.html;
+  setMeta(d.title+' · OpenMedsDB', d.desc, ORIGIN+'/'+key,
+    {"@context":"https://schema.org","@type":"WebPage","name":d.title,"url":ORIGIN+'/'+key,"description":d.desc,
+     "isPartOf":{"@type":"WebSite","name":"OpenMedsDB","url":ORIGIN+'/'}});
+  const ob=$('#doc-optout');
+  if(ob){
+    const sync=()=>{ let off=false; try{ off=localStorage.getItem('noanalytics')==='1'; }catch(e){}
+      ob.textContent=off?'Re-enable analytics':'Disable analytics';
+      $('#doc-optout-state').textContent=off?'Analytics is disabled on this device.':''; };
+    ob.onclick=()=>{ let off=false; try{ off=localStorage.getItem('noanalytics')==='1';
+      if(off) localStorage.removeItem('noanalytics'); else localStorage.setItem('noanalytics','1'); }catch(e){}
+      window['ga-disable-'+GA_ID]=!off; sync(); };
+    sync();
+  }
+}
+
+/* cookie notice */
+(function cookieBar(){
+  const bar=$('#cookiebar'), ok=$('#cookieok'); if(!bar||!ok) return;
+  let seen=false; try{ seen=localStorage.getItem('cookieok')==='1'||localStorage.getItem('noanalytics')==='1'; }catch(e){}
+  if(!seen) bar.hidden=false;
+  ok.onclick=()=>{ try{ localStorage.setItem('cookieok','1'); }catch(e){} bar.hidden=true; };
+})();
+
 /* =============== path router =============== */
 function nav(url, replace){
   if(replace) history.replaceState(null,'',url); else history.pushState(null,'',url);
@@ -1436,6 +1591,7 @@ function route(){
     setMeta('About · OpenMedsDB','About OpenMedsDB — a free medicine reference compiled by Sanket Patil.',ORIGIN+'/about');
     return;
   }
+  if(DOCS[path.slice(1)]){ showDoc(path.slice(1)); return; }
   // browse ("/" and anything unmatched)
   show('browse');
   const p=new URLSearchParams(qs);
